@@ -1,0 +1,70 @@
+<!-- templates/includes/sidebar.html -->
+<script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+
+<aside class="w-64 bg-white border-r border-gray-200 shadow-sm flex flex-col min-h-screen">
+    <div class="p-6 border-b">
+        <h1 class="text-2xl font-bold text-gray-800">Panel</h1>
+        <p class="text-sm text-gray-500">Monitoreo de red local</p>
+    </div>
+    
+    <nav class="flex-1 px-4 py-6 space-y-2" x-data="{ routerOpen: false }">
+        <!-- Servidores -->
+        <a href="{% url 'index' %}" class="flex items-center px-4 py-2 rounded hover:bg-gray-100 text-gray-700 transition">
+            <i class="fas fa-server mr-3 text-gray-500"></i>
+            <span>Panel Principal</span>
+        </a>
+
+        <!-- Routers con submenú -->
+        <div x-data="{ routerOpen: false }" class="space-y-1">
+            <button
+                @click="routerOpen = !routerOpen"
+                class="flex items-center w-full px-4 py-2 rounded hover:bg-gray-100 text-gray-700 transition focus:outline-none focus:ring-2 focus:ring-indigo-200"
+                aria-expanded="false"
+            >
+                <i class="fas fa-briefcase mr-3 text-gray-500"></i>
+                <span class="flex-1 text-left">Gestión</span>
+                <i class="fas fa-chevron-down ml-auto text-gray-500 text-sm transition-transform duration-200"
+                :class="{ 'rotate-180': routerOpen }"></i>
+            </button>
+
+            <div x-show="routerOpen" x-cloak class="pl-12 mt-1 space-y-1 transition-all duration-300 ease-in-out">
+                <a href="{% url 'servidores' %}" class="block px-2 py-1 text-sm text-gray-600 hover:bg-gray-100 rounded flex items-center">
+                    <i class="fas fa-link mr-2 text-gray-400"></i> Conexiones
+                </a>
+                <a href="{% url 'categorias' %}" class="block px-2 py-1 text-sm text-gray-600 hover:bg-gray-100 rounded flex items-center">
+                    <i class="fas fa-tags mr-2 text-gray-400"></i> Categorías
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Usuario y Logout al final -->
+    <div class="p-4 border-t">
+        {% if user.is_authenticated %}
+        <div class="flex items-center justify-between text-gray-700">
+            <div class="flex items-center space-x-2">
+                <i class="fas fa-user-circle text-gray-500"></i>
+                <span class="font-medium">{{ user.first_name }} {{ user.last_name }}</span>
+            </div>
+            <form method="post" action="{% url 'logout' %}">
+                {% csrf_token %}
+                <button
+                    type="submit"
+                    class="text-red-600 hover:text-red-800 focus:outline-none"
+                    title="Cerrar sesión"
+                >
+                    <i class="fas fa-sign-out-alt"></i>
+                </button>
+            </form>
+        </div>
+        {% else %}
+        <a href="{% url 'login' %}" class="flex items-center justify-center text-blue-600 hover:text-blue-800 text-sm font-medium">
+            <i class="fas fa-sign-in-alt mr-1"></i> Iniciar sesión
+        </a>
+        {% endif %}
+    </div>
+
+    <div class="p-4 border-t text-sm text-gray-400">
+        &copy; 2025 Municipio
+    </div>
+</aside>

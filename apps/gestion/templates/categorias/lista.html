@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+
+{% block title %}Categorías{% endblock %}
+
+{% block content %}
+<h1 class="text-2xl font-bold mb-4">Categorías</h1>
+
+<a href="{% url 'crear_categoria' %}" class="inline-block mb-4 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
+    + Nueva Categoría
+</a>
+
+<table class="min-w-full bg-white shadow rounded">
+    <thead>
+        <tr>
+            <th class="py-2 px-4 border-b text-left">Nombre</th>
+            <th class="py-2 px-4 border-b text-left">Descripción</th>
+            <th class="py-2 px-4 border-b text-left">Acciones</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for categoria in categorias %}
+        <tr class="hover:bg-gray-100">
+            <td class="py-2 px-4 border-b text-left">{{ categoria.nombre }}</td>
+            <td class="py-2 px-4 border-b text-left">{{ categoria.descripcion }}</td>
+            <td class="py-2 px-4 border-b text-left space-x-2">
+                <a href="{% url 'editar_categoria' categoria.pk %}" class="text-yellow-600 hover:underline">Editar</a>
+                <a href="{% url 'eliminar_categoria' categoria.pk %}" class="text-red-600 hover:underline">Eliminar</a>
+            </td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="3" class="py-4 text-center text-gray-500">No hay categorías registradas.</td></tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% block title %}Servidores{% endblock %}
+
+{% block content %}
+<h1 class="text-2xl font-bold mb-4">Servidores</h1>
+
+<a href="{% url 'crear_servidor' %}" class="inline-block mb-4 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
+    + Nuevo Servidor
+</a>
+
+<table class="min-w-full bg-white shadow rounded">
+    <thead>
+        <tr>
+            <th class="py-2 px-4 border-b text-left">Nombre</th>
+            <th class="py-2 px-4 border-b text-left">IP</th>
+            <th class="py-2 px-4 border-b text-left">Categoría</th>
+            <th class="py-2 px-4 border-b text-left">Acciones</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for servidor in servidores %}
+        <tr class="hover:bg-gray-100">
+            <td class="py-2 px-4 border-b">{{ servidor.nombre }}</td>
+            <td class="py-2 px-4 border-b font-mono">{{ servidor.ip }}</td>
+            <td class="py-2 px-4 border-b">{{ servidor.categoria.nombre }}</td>
+            <td class="py-2 px-4 border-b space-x-2">
+                <a href="{% url 'editar_servidor' servidor.pk %}" class="text-yellow-600 hover:underline">Editar</a>
+                <a href="{% url 'eliminar_servidor' servidor.pk %}" class="text-red-600 hover:underline">Eliminar</a>
+            </td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="4" class="py-4 text-center text-gray-500">No hay servidores registrados.</td></tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

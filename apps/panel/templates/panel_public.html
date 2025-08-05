@@ -1,0 +1,71 @@
+{% extends "base_sin.html" %}
+{% load static %}
+
+{% block title %}Panel Público{% endblock %}
+
+{% block content %}
+<main class="">
+    <header class="mb-8 relative">
+        <!-- Botón de login -->
+        {% if not request.user.is_authenticated %}
+            <!-- Botón de login -->
+            <a href="{% url 'login' %}" class="absolute top-0 right-0 flex items-center text-blue-600 hover:text-blue-800 text-sm font-medium">
+                <i class="fas fa-sign-in-alt mr-1"></i> Iniciar sesión
+            </a>
+        {% else %}
+        <!-- Mostrar usuario y botón de logout -->
+        <div class="absolute top-0 right-0 flex items-center space-x-4 text-sm font-medium text-gray-700">
+            <span>Hola, {{ request.user.username }}</span>
+            <form method="post" action="{% url 'logout' %}">
+                {% csrf_token %}
+                <button type="submit" class="text-red-600 hover:text-red-800 flex items-center">
+                    <i class="fas fa-sign-out-alt mr-1"></i> Cerrar sesión
+                </button>
+            </form>
+        </div>
+{% endif %}
+
+
+
+        <!-- Título principal -->
+        <h1 class="text-3xl font-bold text-gray-800 mb-1">Panel Público de Servidores</h1>
+        <p class="text-gray-600" id="ultima-actualizacion">Cargando...</p>
+
+        <!-- Mensaje de error -->
+        <div id="error-message" class="hidden mt-4 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
+            Error al conectar con el servidor. Intentando nuevamente...
+        </div>
+    </header>
+
+
+    <!-- Tarjetas de conteo -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+        <div class="bg-white p-4 rounded-lg shadow-sm border border-green-200">
+            <div class="flex items-center">
+                <div class="p-3 rounded-full bg-green-100 mr-4">
+                    <i class="fas fa-server text-green-600"></i>
+                </div>
+                <div>
+                    <p class="text-sm text-gray-500">Online</p>
+                    <p class="text-2xl font-bold text-green-600" id="online-count">0</p>
+                </div>
+            </div>
+        </div>
+        <div class="bg-white p-4 rounded-lg shadow-sm border border-red-200">
+            <div class="flex items-center">
+                <div class="p-3 rounded-full bg-red-100 mr-4">
+                    <i class="fas fa-server text-red-600"></i>
+                </div>
+                <div>
+                    <p class="text-sm text-gray-500">Offline</p>
+                    <p class="text-2xl font-bold text-red-600" id="offline-count">0</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="servidores" class="mt-4"></div>
+</main>
+<script src="{% static 'js/panel.js' %}"> </script>
+
+{% endblock %}

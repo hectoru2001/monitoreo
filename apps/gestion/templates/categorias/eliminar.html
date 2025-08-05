@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+
+{% block title %}Eliminar {{ tipo }}{% endblock %}
+
+{% block content %}
+<div class="max-w-lg mx-auto bg-white shadow-md rounded p-6 mt-8">
+    <h1 class="text-3xl font-bold mb-6 text-red-600 flex items-center gap-2">
+        Eliminar {{ tipo }}
+    </h1>
+
+    <p class="mb-6 text-gray-700 text-lg">
+        ¿Estás seguro que deseas eliminar este registro <strong>{{ tipo }}</strong>?
+    </p>
+
+    <ul class="mb-6 list-disc list-inside text-gray-800">
+        <li><strong>Nombre:</strong> {{ objeto.nombre }}</li>
+        {% if tipo == "Servidor" %}
+            <li><strong>IP:</strong> {{ objeto.ip }}</li>
+            <li><strong>Categoría:</strong> {{ objeto.categoria.nombre }}</li>
+        {% elif tipo == "Icono" %}
+            <li><strong>Descripción:</strong> {{ objeto.descripcion }}</li>
+            <li><strong>Ruta:</strong> {{ objeto.ruta }}</li>
+        {% elif tipo == "Categoría" %}
+            <li><strong>Descripción:</strong> {{ objeto.descripcion }}</li>
+        {% endif %}
+    </ul>
+
+    <form method="post" class="flex items-center gap-4">
+        {% csrf_token %}
+        <button type="submit" class="bg-red-600 hover:bg-red-700 text-white font-semibold px-5 py-2 rounded transition">
+            Confirmar eliminación
+        </button>
+        <a href="{% if tipo == 'Servidor' %}{% url 'servidores' %}
+                {% elif tipo == 'Icono' %}{% url 'iconos' %}
+                {% elif tipo == 'Categoría' %}{% url 'categorias' %}
+                {% endif %}" 
+           class="text-gray-600 hover:text-gray-900 underline">
+            Cancelar
+        </a>
+    </form>
+</div>
+{% endblock %}
