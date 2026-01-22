@@ -208,13 +208,6 @@ function actualizarEstados() {
                                 form.ip.value = data.ip ?? '';
                                 form.servicio.value = data.servicio ?? '';
 
-                                // hidden inputs
-                                form.referencia.value = data.referencia ?? '';
-                                form.referencia2.value = data.referencia2 ?? '';
-
-                                // texto visible
-                                document.getElementById('txt-referencia').textContent = "Referencia Enlace: " + data.referencia ?? '';
-                                document.getElementById('txt-referencia2').textContent = "Referencia Tks: " + data.referencia2 ?? '';
 
                                 abrirModal();
                             })

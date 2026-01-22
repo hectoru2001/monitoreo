@@ -80,19 +80,21 @@
 
             <!-- Editables -->
             <div>
-                <label class="block text-sm font-medium">Servicio</label>
+                <label class="block text-sm font-medium">Número de Reporte</label>
                 <input type="number" name="servicio"
                        class="border rounded px-3 py-2 w-full">
             </div>
 
-            <div>
-                <label id="txt-referencia" class="text-sm font-semibold"></label>
-                <p id="txt-referencia" class="bg-gray-100 px-3 py-2 rounded"></p>
-            </div>
+            <div class="mb-4">
+                <label class="block text-gray-700 text-sm font-bold mb-2">
+                    ¿Qué cayó?
+                </label>
 
-            <div>
-                <label id="txt-referencia2" class="text-sm font-semibold"></label>
-                <p id="txt-referencia2" class="bg-gray-100 px-3 py-2 rounded"></p>
+                <select name="que_cayo" class="w-full border rounded px-3 py-2">
+                    <option value="">Selecciona una opción</option>
+                    <option value="enlace">Referencia Enlace</option>
+                    <option value="tks">Referencia TKS</option>
+                </select>
             </div>
 
             <div>
@@ -109,7 +111,7 @@
 
             <div>
                 <label class="block text-sm font-medium">Observaciones</label>
-                <textarea type="text" name="observaciones" rows="3"
+                <textarea type="text" name="observacion" rows="3"
                        class="border rounded px-3 py-2 w-full"></textarea>
             </div>
 

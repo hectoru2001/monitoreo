@@ -120,8 +120,7 @@ def guardar_reporte(request):
         nombre = request.POST.get('nombre')
         ip = request.POST.get('ip')
         servicio = request.POST.get('servicio')
-        referencia = request.POST.get('referencia')
-        referencia2 = request.POST.get('referencia2')
+        que_cayo = request.POST.get('que_cayo')
         quien_levanta = request.user if request.user.is_authenticated else None
         personal_sitio = request.POST.get('personal_sitio')
         telefono_contacto = request.POST.get('telefono_contacto')
@@ -131,8 +130,7 @@ def guardar_reporte(request):
             nombre=nombre,
             ip=ip,
             servicio=servicio,
-            referencia=referencia,
-            referencia2=referencia2,
+            que_cayo=que_cayo,
             quien_levanta=quien_levanta,
             personal_sitio=personal_sitio,
             telefono_contacto=telefono_contacto,
