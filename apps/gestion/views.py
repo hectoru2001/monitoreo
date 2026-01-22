@@ -4,6 +4,8 @@ from django.shortcuts import render, redirect, get_object_or_404
 from .models import Iconos, Servidor, Categoria, Reportes
 from .forms import IconoForm, ServidorForm, CategoriaForm
 from django.http import JsonResponse
+from django.utils import timezone
+from django.db.models import Q
 
 # -------- Iconos -------- #
 
@@ -98,8 +100,36 @@ def eliminar_categoria(request, pk):
     })
 
 def lista_reportes(request):
-    reportes = Reportes.objects.all()
-    return render(request, 'reportes.html', {'reportes': reportes})
+    reportes = Reportes.objects.all().select_related('quien_levanta')
+
+    q = request.GET.get('q')
+    estatus = request.GET.get('estatus')
+    fecha_inicio = request.GET.get('fecha_inicio')
+    fecha_fin = request.GET.get('fecha_fin')
+
+    if q:
+        reportes = reportes.filter(
+            Q(nombre__icontains=q) |
+            Q(ip__icontains=q) |
+            Q(que_cayo__icontains=q) |
+            Q(servicio__icontains=q)
+        )
+
+    if estatus in ['1', '2']:
+
+        reportes = reportes.filter(estatus=int(estatus))
+
+    if fecha_inicio:
+        reportes = reportes.filter(fecha__date__gte=fecha_inicio)
+
+    if fecha_fin:
+        reportes = reportes.filter(fecha__date__lte=fecha_fin)
+
+    reportes = reportes.order_by('-fecha')
+
+    return render(request, 'reportes.html', {
+        'reportes': reportes
+    })
 
 # === Endpoints === #
 def obtener_servidor(request, ip):
@@ -140,3 +170,11 @@ def guardar_reporte(request):
         )
         reporte.save()
         return JsonResponse({'status': 'success'})
+    
+def cerrar_reporte(request, pk):
+    if request.method == 'POST':
+        reporte = get_object_or_404(Reportes, pk=pk)
+        reporte.estatus = 2  # Cambiar estatus a 'Cerrado'
+        reporte.fecha_levanta = timezone.now()
+        reporte.save()
+        return redirect('reportes')

@@ -28,6 +28,11 @@ class Categoria(models.Model):
     def __str__(self):
         return f"{self.nombre}"
     
+ESTATUS_CHOICES = [
+    (1, 'Activo'),
+    (2, 'Cerrado'),
+]
+
 class Reportes(models.Model):
     nombre = models.CharField(max_length=100)
     ip = models.GenericIPAddressField(protocol='IPv4')
@@ -40,6 +45,7 @@ class Reportes(models.Model):
     personal_sitio = models.CharField(max_length=100, null=True, blank=True)
     telefono_contacto = models.CharField(max_length=20, null=True, blank=True)
     observacion = models.TextField(null=True, blank=True)
+    estatus = models.IntegerField(choices=ESTATUS_CHOICES, default=1)
 
     def __str__(self):
         return f"Reporte de {self.servidor.nombre} a las {self.fecha_hora}: {self.estado}"

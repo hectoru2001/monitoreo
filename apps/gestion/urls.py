@@ -26,4 +26,5 @@ urlpatterns = [
     # API Endpoints
     path('api/servidor/<str:ip>/', views.obtener_servidor, name='obtener_servidor'),
     path('api/guardar_reporte/', views.guardar_reporte, name='guardar_reporte'),
+    path('api/cerrar_reporte/<int:pk>', views.cerrar_reporte, name='cerrar_reporte'),
 ]
