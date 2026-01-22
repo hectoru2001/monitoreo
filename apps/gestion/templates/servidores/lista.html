@@ -16,6 +16,9 @@
         <tr>
             <th class="py-2 px-4 border-b text-left">Nombre</th>
             <th class="py-2 px-4 border-b text-left">IP</th>
+            <th class="py-2 px-4 border-b text-left">Servicio</th>
+            <th class="py-2 px-4 border-b text-left">Referencia 1</th>
+            <th class="py-2 px-4 border-b text-left">Referencia 2</th>
             <th class="py-2 px-4 border-b text-left">Categoría</th>
             <th class="py-2 px-4 border-b text-left">Acciones</th>
         </tr>
@@ -25,6 +28,9 @@
         <tr class="hover:bg-gray-100">
             <td class="py-2 px-4 border-b">{{ servidor.nombre }}</td>
             <td class="py-2 px-4 border-b font-mono">{{ servidor.ip }}</td>
+            <td class="py-2 px-4 border-b">{{ servidor.servicio|default_if_none:""}}</td>
+            <td class="py-2 px-4 border-b">{{ servidor.referencia|default:"" }}</td>
+            <td class="py-2 px-4 border-b">{{ servidor.referencia2|default:"" }}</td>
             <td class="py-2 px-4 border-b">{{ servidor.categoria.nombre }}</td>
             <td class="py-2 px-4 border-b space-x-2">
                 <a href="{% url 'editar_servidor' servidor.pk %}" class="text-yellow-600 hover:underline">Editar</a>

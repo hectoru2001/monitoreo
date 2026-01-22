@@ -1,17 +1,22 @@
-// Mapa de sonidos por nombre de categoría
+// Mapa de sonidos por nombre de categoría (rutas)
 const sonidosPorCategoria = {
-    'Servidor': new Audio('/static/audio/1.mp3'),
-    'Enlace': new Audio('/static/audio/2.mp3'),
-    'Servidores': new Audio('/static/audio/3.mp3'),
+    'Servidor': '/static/audio/1.mp3',
+    'Enlace': '/static/audio/2.mp3',
+    'PC': '/static/audio/3.mp3',
 };
 
-// Control de sonidos ya emitidos
+// Categorías para las que ya se emitió sonido
 const sonidosEmitidos = new Set();
 let sonidosActivos = false;
+let fallosConsecutivos = {};
 
-// Intento de precarga de audio para obtener permiso del usuario
+// Estado previo de todos los servidores { 'nombreServidor': 'Online'|'Offline' }
+let estadoPrevioServidores = {};
+
+// Precargar audios tras interacción usuario
 function activarSonidos() {
-    Object.values(sonidosPorCategoria).forEach(audio => {
+    Object.values(sonidosPorCategoria).forEach(ruta => {
+        const audio = new Audio(ruta);
         audio.play().then(() => {
             audio.pause();
             audio.currentTime = 0;
@@ -20,6 +25,67 @@ function activarSonidos() {
         });
     });
 }
+
+// Reproducir sonido X veces manteniendo objeto Audio
+function reproducirSonidoRepetidoDesdeRuta(ruta, repeticiones = 3) {
+    let contador = 0;
+    const audio = new Audio(ruta);
+
+    audio.addEventListener('ended', () => {
+        contador++;
+        if (contador < repeticiones) {
+            audio.currentTime = 0;
+            audio.play().catch(e => console.warn('No se pudo reproducir:', e));
+        }
+    });
+
+    audio.play().catch(e => console.warn('No se pudo reproducir:', e));
+}
+
+function abrirModal() {
+    const modal = document.getElementById('modal-servidor');
+    modal.classList.remove('hidden');
+    modal.classList.add('flex');
+}
+
+function cerrarModal() {
+    const modal = document.getElementById('modal-servidor');
+    modal.classList.add('hidden');
+    modal.classList.remove('flex');
+}
+
+function enviarReporte() {
+    const form = document.getElementById('form-reporte');
+    const formData = new FormData(form);
+
+    fetch('/gestion/api/guardar_reporte/', {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': getCSRFToken(),
+        },
+        body: formData
+    })
+    .then(res => {
+        if (!res.ok) throw new Error('Error al guardar');
+        return res.json();
+    })
+    .then(data => {
+        cerrarModal();
+        alert('Reporte creado correctamente');
+        form.reset();
+    })
+    .catch(err => {
+        console.error(err);
+        alert('Error al guardar el reporte');
+    });
+}
+
+function getCSRFToken() {
+    return document.querySelector('[name=csrfmiddlewaretoken]').value;
+}
+
+const MAX_FALLOS = 3;
+const form = document.getElementById('form-reporte');
 
 function actualizarEstados() {
     fetch('/panel/ping-status/')
@@ -37,6 +103,8 @@ function actualizarEstados() {
             let offline = 0;
             contenedor.innerHTML = '';
 
+            const categoriasConCaidaNueva = new Set();
+
             for (const categoria in data) {
                 const servidores = data[categoria];
 
@@ -51,53 +119,138 @@ function actualizarEstados() {
                 const servidoresContainer = document.createElement('div');
                 servidoresContainer.className = 'flex flex-wrap gap-3';
 
-                let algunOffline = false;
-
                 servidores.forEach(servidor => {
-                    const isOnline = servidor.status === 'Online';
-                    if (isOnline) {
+                    const nombre = servidor.nombre;
+                    const responde = servidor.status === 'Online';
+
+                    if (!(nombre in fallosConsecutivos)) {
+                        fallosConsecutivos[nombre] = 0;
+                    }
+
+                    if (responde) {
+                        fallosConsecutivos[nombre] = 0;
+                    } else {
+                        fallosConsecutivos[nombre]++;
+                    }
+
+                    let estado;
+                    if (fallosConsecutivos[nombre] === 0) {
+                        estado = 'Online';
+                        online++;
+                    } else if (fallosConsecutivos[nombre] <= 2) {
+                        estado = 'Inestable';
+                        online++;
+                    } else if (fallosConsecutivos[nombre] <= 6) {
+                        estado = 'Degradado';
                         online++;
                     } else {
+                        estado = 'Offline';
                         offline++;
-                        algunOffline = true;
+                    }
+
+
+                    const estadoPrevio = estadoPrevioServidores[nombre];
+
+                    if (estadoPrevio === 'Online' && estado === 'Offline') {
+                        categoriasConCaidaNueva.add(categoria);
+                    }
+
+                    estadoPrevioServidores[nombre] = estado;
+
+                    let bgColor, textColor, borderColor, dotColor;
+
+                    switch (estado) {
+                        case 'Online':
+                            bgColor = 'bg-green-100';
+                            textColor = 'text-green-700';
+                            borderColor = 'border-green-300';
+                            dotColor = 'bg-green-500';
+                            break;
+                        case 'Inestable':
+                            bgColor = 'bg-yellow-100';
+                            textColor = 'text-yellow-700';
+                            borderColor = 'border-yellow-300';
+                            dotColor = 'bg-yellow-500';
+                            break;
+                        case 'Degradado':
+                            bgColor = 'bg-orange-100';
+                            textColor = 'text-orange-700';
+                            borderColor = 'border-orange-300';
+                            dotColor = 'bg-orange-500';
+                            break;
+                        default:
+                            bgColor = 'bg-red-100';
+                            textColor = 'text-red-700';
+                            borderColor = 'border-red-300';
+                            dotColor = 'bg-red-500';
                     }
 
                     const card = document.createElement('div');
-                    const bgColor = isOnline ? 'bg-green-100' : 'bg-red-100';
-                    const textColor = isOnline ? 'text-green-700' : 'text-red-700';
-                    const borderColor = isOnline ? 'border-green-300' : 'border-red-300';
-
                     card.className = `flex items-center gap-2 px-4 py-2 rounded-full border ${borderColor} ${bgColor} cursor-default transition hover:shadow-lg`;
 
                     card.innerHTML = `
-                        <span class="w-3 h-3 rounded-full ${isOnline ? 'bg-green-500' : 'bg-red-500'} inline-block"></span>
-                        <span class="font-semibold ${textColor}" data-tippy-content="IP: ${servidor.ip}">${servidor.nombre}</span>
+                        <span class="w-3 h-3 rounded-full ${dotColor} inline-block"></span>
+                        <span class="font-semibold ${textColor}" data-tippy-content="IP: ${servidor.ip}">
+                            ${servidor.nombre}
+                        </span>
                     `;
+
+                    card.addEventListener('click', () => {
+                        const ip = encodeURIComponent(servidor.ip);
+
+                        fetch(`/gestion/api/servidor/${ip}/`)
+                            .then(res => {
+                                if (!res.ok) throw new Error('No encontrado');
+                                return res.json();
+                            })
+                            .then(data => {
+                                form.nombre.value = data.nombre ?? '';
+                                form.ip.value = data.ip ?? '';
+                                form.servicio.value = data.servicio ?? '';
+
+                                // hidden inputs
+                                form.referencia.value = data.referencia ?? '';
+                                form.referencia2.value = data.referencia2 ?? '';
+
+                                // texto visible
+                                document.getElementById('txt-referencia').textContent = "Referencia Enlace: " + data.referencia ?? '';
+                                document.getElementById('txt-referencia2').textContent = "Referencia Tks: " + data.referencia2 ?? '';
+
+                                abrirModal();
+                            })
+                            .catch(err => {
+                                console.error('Error cargando servidor:', err);
+                                alert('No se pudo cargar la información del servidor');
+                            });
+
+                    });
 
                     servidoresContainer.appendChild(card);
                 });
 
                 categoriaContainer.appendChild(servidoresContainer);
                 contenedor.appendChild(categoriaContainer);
+            }
 
-                // Emitir sonido si hay caída y aún no se ha emitido
-                if (algunOffline && !sonidosEmitidos.has(categoria) && sonidosActivos) {
-                    const sonido = sonidosPorCategoria[categoria];
-                    if (sonido) {
-                        sonido.play().catch(e => console.warn("No se pudo reproducir el sonido:", e));
-                        sonidosEmitidos.add(categoria);
+            if (sonidosActivos) {
+                categoriasConCaidaNueva.forEach(categoria => {
+                    if (!sonidosEmitidos.has(categoria)) {
+                        const rutaSonido = sonidosPorCategoria[categoria];
+                        if (rutaSonido) {
+                            reproducirSonidoRepetidoDesdeRuta(rutaSonido, 3);
+                            sonidosEmitidos.add(categoria);
+                        }
                     }
-                }
+                });
             }
 
             if (offline === 0) {
-                sonidosEmitidos.clear(); // Reinicia si todo está en línea
+                sonidosEmitidos.clear();
             }
 
             onlineCount.textContent = online;
             offlineCount.textContent = offline;
 
-            // Inicializa tooltips
             tippy('[data-tippy-content]', {
                 placement: 'top',
                 animation: 'shift-away',
@@ -111,6 +264,17 @@ function actualizarEstados() {
         });
 }
 
+document.getElementById('form-conexion')?.addEventListener('submit', e => {
+    console.log('Registrando evento de conexión/desconexión...');
+    e.preventDefault();
+    fetch('/panel/registrar-evento/', {
+        method: 'POST',
+        body: new FormData(e.target),
+        headers: { 'X-CSRFToken': getCSRFToken() }
+    }).then(() => cerrarModal());
+});
+
+
 // Al cargar la página
 document.addEventListener('DOMContentLoaded', () => {
     const switchSonido = document.getElementById('activar-sonidos');
@@ -122,6 +286,17 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    if (form){
+        form.addEventListener('submit', function (e) {
+            e.preventDefault(); 
+
+            enviarReporte();
+        });
+
+        document.getElementById('cerrar-modal').addEventListener('click', cerrarModal);
+    }
+
+
     actualizarEstados();
-    setInterval(actualizarEstados, 60 * 1000); // Cada minuto
+    setInterval(actualizarEstados, 5000); // ajusta el intervalo si quieres
 });

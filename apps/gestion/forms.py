@@ -16,10 +16,13 @@ class IconoForm(forms.ModelForm):
 class ServidorForm(forms.ModelForm):
     class Meta:
         model = Servidor
-        fields = ['nombre', 'ip', 'categoria']
+        fields = ['nombre', 'ip', 'categoria', 'servicio', 'referencia', 'referencia2']
         widgets = {
             'nombre': forms.TextInput(attrs={'class': 'border rounded px-3 py-2 w-full'}),
             'ip': forms.TextInput(attrs={'class': 'border rounded px-3 py-2 w-full'}),
+            'servicio': forms.TextInput(attrs={'class': 'border rounded px-3 py-2 w-full', 'type': 'number', 'inputmode': 'numeric', 'pattern': '[0-9]*'}),
+            'referencia': forms.TextInput(attrs={'class': 'border rounded px-3 py-2 w-full'}),
+            'referencia2': forms.TextInput(attrs={'class': 'border rounded px-3 py-2 w-full'}),
             'categoria': forms.Select(attrs={'class': 'border rounded px-3 py-2 w-full'}),
             'icono': forms.Select(attrs={
                 'class': 'hidden'

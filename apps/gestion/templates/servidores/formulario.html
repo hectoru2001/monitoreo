@@ -30,6 +30,39 @@
         {% endif %}
     </div>
 
+    <!-- Campo: servicio -->
+    <div class="mb-4">
+        <label class="block text-gray-700 text-sm font-bold mb-2">
+            Servicio
+        </label>
+        {{ form.servicio }}
+        {% if form.servicio.errors %}
+            <p class="text-red-500 text-xs mt-1">{{ form.servicio.errors.0 }}</p>
+        {% endif %}
+    </div>
+
+    <!-- Campo: referncia -->
+    <div class="mb-4">
+        <label class="block text-gray-700 text-sm font-bold mb-2">
+            Referencia 1
+        </label>
+        {{ form.referencia }}
+        {% if form.referencia.errors %}
+            <p class="text-red-500 text-xs mt-1">{{ form.referncia.errors.0 }}</p>
+        {% endif %}
+    </div>
+
+    <!-- Campo: referencia2 -->
+    <div class="mb-4">
+        <label class="block text-gray-700 text-sm font-bold mb-2">
+            Referencia 2
+        </label>
+        {{ form.referencia2 }}
+        {% if form.referencia2.errors %}
+            <p class="text-red-500 text-xs mt-1">{{ form.referencia2.errors.0 }}</p>
+        {% endif %}
+    </div>
+
     <!-- Campo: categoria -->
     <div class="mb-6">
         <label class="block text-gray-700 text-sm font-bold mb-2">

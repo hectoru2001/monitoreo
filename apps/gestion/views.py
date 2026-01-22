@@ -1,8 +1,9 @@
 # views.py
 
 from django.shortcuts import render, redirect, get_object_or_404
-from .models import Iconos, Servidor, Categoria
+from .models import Iconos, Servidor, Categoria, Reportes
 from .forms import IconoForm, ServidorForm, CategoriaForm
+from django.http import JsonResponse
 
 # -------- Iconos -------- #
 
@@ -31,7 +32,6 @@ def eliminar_icono(request, pk):
         icono.delete()
         return redirect('iconos')
     return render(request, 'iconos/eliminar.html', {'objeto': icono})
-
 
 # -------- Servidores -------- #
 
@@ -96,3 +96,47 @@ def eliminar_categoria(request, pk):
         'objeto': categoria,  # o puedes usar 'categoria' si así lo tienes en el template
         'tipo': 'Categoría'
     })
+
+def lista_reportes(request):
+    reportes = Reportes.objects.all()
+    return render(request, 'reportes.html', {'reportes': reportes})
+
+# === Endpoints === #
+def obtener_servidor(request, ip):
+    servidor = get_object_or_404(Servidor, ip=ip)
+    data = {
+        'nombre': servidor.nombre,
+        'ip': servidor.ip,
+        'servicio': servidor.servicio,
+        'referencia': servidor.referencia,
+        'referencia2': servidor.referencia2,
+        'categoria': servidor.categoria.nombre,
+        'icono': servidor.icono.ruta if servidor.icono else None,
+    }
+    return JsonResponse(data)
+
+def guardar_reporte(request):
+    if request.method == 'POST':
+        nombre = request.POST.get('nombre')
+        ip = request.POST.get('ip')
+        servicio = request.POST.get('servicio')
+        referencia = request.POST.get('referencia')
+        referencia2 = request.POST.get('referencia2')
+        quien_levanta = request.user if request.user.is_authenticated else None
+        personal_sitio = request.POST.get('personal_sitio')
+        telefono_contacto = request.POST.get('telefono_contacto')
+        observacion = request.POST.get('observacion')
+
+        reporte = Reportes(
+            nombre=nombre,
+            ip=ip,
+            servicio=servicio,
+            referencia=referencia,
+            referencia2=referencia2,
+            quien_levanta=quien_levanta,
+            personal_sitio=personal_sitio,
+            telefono_contacto=telefono_contacto,
+            observacion=observacion
+        )
+        reporte.save()
+        return JsonResponse({'status': 'success'})

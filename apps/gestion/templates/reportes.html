@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% block title %}Reportes{% endblock %}
+
+{% block content %}
+<h1 class="text-2xl font-bold mb-4">Servidores</h1>
+
+<a href="{% url 'crear_servidor' %}" class="inline-block mb-4 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
+    + Nuevo Servidor
+</a>
+
+<table class="min-w-full bg-white shadow rounded">
+    <thead>
+        <tr>
+            <th class="py-2 px-4 border-b text-left">Nombre</th>
+            <th class="py-2 px-4 border-b text-left">IP</th>
+            <th class="py-2 px-4 border-b text-left">Servicio</th>
+            <th class="py-2 px-4 border-b text-left">Referencia Enlace</th>
+            <th class="py-2 px-4 border-b text-left">Referencia Tks</th>
+            <th class="py-2 px-4 border-b text-left">Fecha de Creación</th>
+            <th class="py-2 px-4 border-b text-left">Observación</th>
+            <th class="py-2 px-4 border-b text-left">Servicio</th>
+            <th class="py-2 px-4 border-b text-left">Servicio</th>
+
+        </tr>
+    </thead>
+    <tbody>
+        {% for r in reportes %}
+        <tr class="hover:bg-gray-100">
+            <td class="py-2 px-4 border-b">{{ r.nombre }}</td>
+            <td class="py-2 px-4 border-b font-mono">{{ r.ip }}</td>
+            <td class="py-2 px-4 border-b">{{ r.servicio|default_if_none:""}}</td>
+            <td class="py-2 px-4 border-b">{{ r.referencia|default:"" }}</td>
+            <td class="py-2 px-4 border-b">{{ r.referencia2|default:"" }}</td>
+            <td class="py-2 px-4 border-b">{{ r.fecha }}</td>
+            <td class="py-2 px-4 border-b">{{ r.observacion|default:"" }}</td>
+
+        </tr>
+        {% empty %}
+        <tr><td colspan="4" class="py-4 text-center text-gray-500">No hay servidores registrados.</td></tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

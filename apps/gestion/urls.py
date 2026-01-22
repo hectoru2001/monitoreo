@@ -19,4 +19,11 @@ urlpatterns = [
     path('categorias/nuevo/', views.crear_categoria, name='crear_categoria'),
     path('categorias/editar/<int:pk>/', views.editar_categoria, name='editar_categoria'),
     path('categorias/eliminar/<int:pk>/', views.eliminar_categoria, name='eliminar_categoria'),
+
+    # Reportes
+    path('reportes/', views.lista_reportes, name='reportes'),
+
+    # API Endpoints
+    path('api/servidor/<str:ip>/', views.obtener_servidor, name='obtener_servidor'),
+    path('api/guardar_reporte/', views.guardar_reporte, name='guardar_reporte'),
 ]

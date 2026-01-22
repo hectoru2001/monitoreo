@@ -4,16 +4,21 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
 
 def login_view(request):
+    # Si ya está autenticado, redirige directamente al panel
+    if request.user.is_authenticated:
+        return redirect('index')
+
     if request.method == 'POST':
         username = request.POST.get('username')
         password = request.POST.get('password')
+
         user = authenticate(request, username=username, password=password)
         if user is not None:
             login(request, user)
-            return redirect('index')  # o a donde quieras redirigir
+            return redirect('index')  # o 'panel'
         else:
             messages.error(request, 'Usuario o contraseña incorrectos')
-    
+
     return render(request, 'login.html')
     
 

@@ -14,10 +14,11 @@
 </header>
 
 <!-- Tarjetas de conteo -->
- <div class="flex items-center gap-2 mb-4">
-    <label for="sonido-toggle" class="text-sm text-gray-600">Sonidos de alerta</label>
-    <input type="checkbox" id="sonido-toggle" class="h-5 w-5 text-blue-600">
-</div>
+<label class="inline-flex items-center mt-4">
+    <input type="checkbox" id="activar-sonidos" class="form-checkbox h-5 w-5 text-green-600">
+    <span class="ml-2 text-sm text-gray-700">Activar sonidos</span>
+</label>
+
 
 <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
     <div class="bg-white p-4 rounded-lg shadow-sm border border-green-200">
@@ -51,6 +52,81 @@
         <p>Cargando estado de los servidores...</p>
     </div>
 </div>
+
+<div id="modal-servidor"
+     class="fixed inset-0 bg-black/50 hidden items-center justify-center z-50">
+
+    <div class="bg-white rounded-lg shadow-lg w-full max-w-lg p-6 relative">
+        <h3 class="text-xl font-semibold mb-4">
+            Levantar reporte
+        </h3>
+
+        <form id="form-reporte" class="space-y-4">
+            
+            <input type="hidden" name="referencia">
+            <input type="hidden" name="referencia2">
+
+            <div>
+                <label class="block text-sm font-medium">Nombre</label>
+                <input type="text" name="nombre" readonly
+                       class="border rounded px-3 py-2 w-full bg-gray-100">
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium">IP</label>
+                <input type="text" name="ip" readonly
+                       class="border rounded px-3 py-2 w-full bg-gray-100">
+            </div>
+
+            <!-- Editables -->
+            <div>
+                <label class="block text-sm font-medium">Servicio</label>
+                <input type="number" name="servicio"
+                       class="border rounded px-3 py-2 w-full">
+            </div>
+
+            <div>
+                <label id="txt-referencia" class="text-sm font-semibold"></label>
+                <p id="txt-referencia" class="bg-gray-100 px-3 py-2 rounded"></p>
+            </div>
+
+            <div>
+                <label id="txt-referencia2" class="text-sm font-semibold"></label>
+                <p id="txt-referencia2" class="bg-gray-100 px-3 py-2 rounded"></p>
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium">Personal en Sitio</label>
+                <input type="text" name="personal_sitio"
+                       class="border rounded px-3 py-2 w-full">
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium">Télefono Personal en Sitio</label>
+                <input name="telefono_contacto"
+                          class="border rounded px-3 py-2 w-full">
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium">Observaciones</label>
+                <textarea type="text" name="observaciones" rows="3"
+                       class="border rounded px-3 py-2 w-full"></textarea>
+            </div>
+
+            <div class="flex justify-end gap-2 pt-4">
+                <button type="button" id="cerrar-modal"
+                        class="px-4 py-2 border rounded">
+                    Cancelar
+                </button>
+                <button type="submit"
+                        class="px-4 py-2 bg-blue-600 text-white rounded">
+                    Guardar
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
 
 <script src="{% static 'js/panel.js' %}"> </script>
 {% endblock %}
