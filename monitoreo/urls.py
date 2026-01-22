@@ -7,6 +7,6 @@ urlpatterns = [
     path('panel/', include('apps.panel.urls')),
     path('gestion/', include('apps.gestion.urls')),
 
-    path('login/', auth_views.LoginView.as_view(template_name='login.html'), name='login'),
+    path('', auth_views.LoginView.as_view(template_name='login.html'), name='login'),
     path('logout/', auth_views.LogoutView.as_view(), name='logout'),
 ]
