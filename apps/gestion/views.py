@@ -119,6 +119,7 @@ def guardar_reporte(request):
     if request.method == 'POST':
         nombre = request.POST.get('nombre')
         ip = request.POST.get('ip')
+        enlace = request.POST.get('enlace')
         servicio = request.POST.get('servicio')
         que_cayo = request.POST.get('que_cayo')
         quien_levanta = request.user if request.user.is_authenticated else None
@@ -129,6 +130,7 @@ def guardar_reporte(request):
         reporte = Reportes(
             nombre=nombre,
             ip=ip,
+            enlace=enlace,
             servicio=servicio,
             que_cayo=que_cayo,
             quien_levanta=quien_levanta,

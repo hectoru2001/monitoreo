@@ -78,6 +78,12 @@
                        class="border rounded px-3 py-2 w-full bg-gray-100">
             </div>
 
+            <div>
+                <label class="block text-sm font-medium">Número de Enlace</label>
+                <input type="text" name="enlace" readonly
+                       class="border rounded px-3 py-2 w-full bg-gray-100">
+            </div>
+
             <!-- Editables -->
             <div>
                 <label class="block text-sm font-medium">Número de Reporte</label>
@@ -85,17 +91,16 @@
                        class="border rounded px-3 py-2 w-full">
             </div>
 
+
             <div class="mb-4">
                 <label class="block text-gray-700 text-sm font-bold mb-2">
                     ¿Qué cayó?
                 </label>
-
-                <select name="que_cayo" class="w-full border rounded px-3 py-2">
+                <select name="que_cayo" id="que_cayo" class="w-full border rounded px-3 py-2" required>
                     <option value="">Selecciona una opción</option>
-                    <option value="enlace">Referencia Enlace</option>
-                    <option value="tks">Referencia TKS</option>
                 </select>
             </div>
+
 
             <div>
                 <label class="block text-sm font-medium">Personal en Sitio</label>

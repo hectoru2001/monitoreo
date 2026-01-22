@@ -204,10 +204,27 @@ function actualizarEstados() {
                                 return res.json();
                             })
                             .then(data => {
+                                // inputs normales
                                 form.nombre.value = data.nombre ?? '';
                                 form.ip.value = data.ip ?? '';
-                                form.servicio.value = data.servicio ?? '';
+                                form.enlace.value = data.servicio ?? '';
+                                // select ¿Qué cayó?
+                                const select = document.getElementById('que_cayo');
+                                select.innerHTML = '<option value="">Selecciona una opción</option>';
 
+                                if (data.referencia) {
+                                    const opt1 = document.createElement('option');
+                                    opt1.value = data.referencia;
+                                    opt1.textContent = "Referencia Enlace - " + data.referencia;
+                                    select.appendChild(opt1);
+                                }
+
+                                if (data.referencia2) {
+                                    const opt2 = document.createElement('option');
+                                    opt2.value = data.referencia2;
+                                    opt2.textContent = "Referencia TKS - " + data.referencia2;
+                                    select.appendChild(opt2);
+                                }
 
                                 abrirModal();
                             })
@@ -215,8 +232,8 @@ function actualizarEstados() {
                                 console.error('Error cargando servidor:', err);
                                 alert('No se pudo cargar la información del servidor');
                             });
-
                     });
+
 
                     servidoresContainer.appendChild(card);
                 });
