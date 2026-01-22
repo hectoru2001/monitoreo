@@ -22,19 +22,14 @@ def status_ping(request):
         lista_servidores = []
 
         for servidor in servidores_categoria:
-            ips_servidor = [servidor.ip]  # aunque solo 1 IP por servidor en tu modelo
+            ip = servidor.ip  # STRING
 
-            estados_ips = []
-            for ip in ips_servidor:
-                estado = ping_host(ip)  # ping secuencial, espera aquí
-                estados_ips.append(estado)
-
-            estado_general = 'Online' if any(estados_ips) else 'Offline'
+            responde = ping_host(ip)
 
             lista_servidores.append({
                 'nombre': servidor.nombre,
-                'ip': ips_servidor,
-                'status': estado_general,
+                'ip': ip,
+                'status': 'Online' if responde else 'Offline',
             })
 
         data[categoria.nombre] = lista_servidores
