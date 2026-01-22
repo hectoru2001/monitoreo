@@ -4,21 +4,31 @@ import platform
 def ping_host(ip: str, timeout=1000) -> bool:
     """
     Hace ping a una IP y devuelve True si responde, False si no.
-
-    :param ip: Dirección IP a pingear.
-    :param timeout: Tiempo en milisegundos para esperar respuesta.
+    Timeout en milisegundos.
     """
-    param = '-n' if platform.system().lower() == 'windows' else '-c'
-    # timeout para Linux/Mac es en segundos (dividimos milisegundos entre 1000)
-    timeout_param = '-w' if platform.system().lower() == 'windows' else '-W'
-    timeout_value = str(timeout) if platform.system().lower() == 'windows' else str(int(timeout / 1000))
+    system = platform.system().lower()
+
+    if system == 'windows':
+        cmd = [
+            'ping', '-n', '1',
+            '-w', str(timeout),
+            ip
+        ]
+    else:
+        # Linux / macOS
+        timeout_sec = max(1, int(timeout / 1000))
+        cmd = [
+            'ping', '-c', '1',
+            '-W', str(timeout_sec),
+            ip
+        ]
 
     try:
-        output = subprocess.run(
-            ['ping', param, '1', timeout_param, timeout_value, ip],
+        result = subprocess.run(
+            cmd,
             stdout=subprocess.DEVNULL,
             stderr=subprocess.DEVNULL
         )
-        return output.returncode == 0
+        return result.returncode == 0
     except Exception:
         return False
