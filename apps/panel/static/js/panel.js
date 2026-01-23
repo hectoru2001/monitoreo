@@ -73,6 +73,7 @@ function enviarReporte() {
         cerrarModal();
         alert('Reporte creado correctamente');
         form.reset();
+        cerrarModal();
     })
     .catch(err => {
         console.error(err);

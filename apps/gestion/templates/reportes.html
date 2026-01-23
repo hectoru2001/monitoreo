@@ -68,6 +68,7 @@
             <th class="py-2 px-4 border-b text-left">Observaciones</th>
             <th class="py-2 px-4 border-b text-left">Personal en Sitio</th>
             <th class="py-2 px-4 border-b text-left">Fecha Levanta</th>
+            <th class="py-2 px-4 border-b text-left">Observaciones Finales</th>
             <th class="py-2 px-4 border-b text-left">Acciones</th>
         </tr>
     </thead>
@@ -92,16 +93,16 @@
                     </span>
                 {% endif %}
             </td>
+            <td class="py-2 px-4 border-b">{{ r.observaciones_finales|default:"" }}</td>
             <td class="py-2 px-4 border-b">
                 {% if r.estatus == 1 %}
-                    <form method="post" action="{% url 'cerrar_reporte' r.id %}">
-                        {% csrf_token %}
-                        <button class="bg-green-600 text-white px-3 py-1 rounded hover:bg-green-700 transition">
-                            Cerrar Reporte
-                        </button>
-                    </form>
+                    <button
+                        class="bg-green-600 text-white px-3 py-1 rounded hover:bg-green-700 transition"
+                        onclick="abrirModalCerrar({{ r.id }})">
+                        Cerrar
+                    </button>
                 {% else %}
-                    <span class="text-gray-500">Reporte Cerrado</span>
+                    <span class="text-gray-500">Cerrado</span>
                 {% endif %}
             </td>
         </tr>
@@ -114,4 +115,56 @@
         {% endfor %}
     </tbody>
 </table>
+
+<div id="modal-cerrar" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+    <div class="bg-white rounded-lg shadow-lg w-full max-w-md p-6">
+        <h2 class="text-xl font-bold mb-4">Cerrar Reporte</h2>
+
+        <form id="form-cerrar" method="post">
+            {% csrf_token %}
+
+            <div class="mb-4">
+                <label class="block text-gray-700 text-sm font-bold mb-2">
+                    Observaciones finales
+                </label>
+                <textarea
+                    name="observaciones_finales"
+                    class="w-full border rounded px-3 py-2"
+                    rows="4"
+                    required></textarea>
+            </div>
+
+            <div class="flex justify-end gap-2">
+                <button type="button"
+                        onclick="cerrarModalCerrar()"
+                        class="px-4 py-2 bg-gray-300 rounded">
+                    Cancelar
+                </button>
+
+                <button type="submit"
+                        class="px-4 py-2 bg-green-600 text-white rounded">
+                    Confirmar cierre
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+function abrirModalCerrar(idReporte) {
+    const modal = document.getElementById('modal-cerrar');
+    const form = document.getElementById('form-cerrar');
+
+    form.action = `/gestion/api/cerrar_reporte/${idReporte}/`;
+    modal.classList.remove('hidden');
+    modal.classList.add('flex');
+}
+
+function cerrarModalCerrar() {
+    const modal = document.getElementById('modal-cerrar');
+    modal.classList.add('hidden');
+    modal.classList.remove('flex');
+}
+</script>
+
 {% endblock %}

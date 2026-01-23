@@ -172,9 +172,11 @@ def guardar_reporte(request):
         return JsonResponse({'status': 'success'})
     
 def cerrar_reporte(request, pk):
+    observaciones_finales = request.POST.get('observaciones_finales', '')
     if request.method == 'POST':
         reporte = get_object_or_404(Reportes, pk=pk)
-        reporte.estatus = 2  # Cambiar estatus a 'Cerrado'
+        reporte.observaciones_finales = observaciones_finales
+        reporte.estatus = 2 
         reporte.fecha_levanta = timezone.now()
         reporte.save()
         return redirect('reportes')

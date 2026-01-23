@@ -46,6 +46,7 @@ class Reportes(models.Model):
     telefono_contacto = models.CharField(max_length=20, null=True, blank=True)
     observacion = models.TextField(null=True, blank=True)
     estatus = models.IntegerField(choices=ESTATUS_CHOICES, default=1)
+    observaciones_finales = models.TextField(null=True, blank=True)
 
     def __str__(self):
         return f"Reporte de {self.servidor.nombre} a las {self.fecha_hora}: {self.estado}"
