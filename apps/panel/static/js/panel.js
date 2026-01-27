@@ -1,9 +1,7 @@
 // Mapa de sonidos por nombre de categoría (rutas)
-const sonidosPorCategoria = {
-    'Servidor': '/static/audio/1.mp3',
-    'Enlace': '/static/audio/2.mp3',
-    'PC': '/static/audio/3.mp3',
-};
+const SONIDO_CAIDA = '/static/audio/1.mp3';
+
+const sonidoYaEmitido = {};
 
 // Categorías para las que ya se emitió sonido
 const sonidosEmitidos = new Set();
@@ -174,10 +172,31 @@ function actualizarEstados() {
                     }
 
                     const estadoPrevio = estadoPrevioServidores[nombre];
-                    if (estadoPrevio === 'ON' && estado === 'OFF') {
-                        categoriasConCaidaNueva.add(categoria);
+
+                    // 🔊 detectar caída real
+                    if (sonidosActivos) {
+
+                    // 🟢 Si ya NO está OFF, liberamos el bloqueo
+                    if (estado !== 'OFF') {
+                        sonidoYaEmitido[nombre] = false;
                     }
+
+                    // 🔴 Solo cuando ENTRA a OFF
+                    if (
+                        estado === 'OFF' &&
+                        estadoPrevio !== 'OFF' &&
+                        !sonidoYaEmitido[nombre]
+                    ) {
+                            reproducirSonidoRepetidoDesdeRuta('/static/audio/1.mp3', 2);
+                            sonidoYaEmitido[nombre] = true;
+
+                            console.log(`🔊 Sonido único por caída: ${nombre}`);
+                        }
+                    }
+
                     estadoPrevioServidores[nombre] = estado;
+
+
 
                     // Crear tarjeta compacta
                     tarjetasHTML += `
@@ -230,24 +249,6 @@ function actualizarEstados() {
             tooltipTriggerList.forEach(el => {
                 new bootstrap.Tooltip(el);
             });
-
-
-            // Manejo de sonidos
-            if (sonidosActivos) {
-                categoriasConCaidaNueva.forEach(categoria => {
-                    if (!sonidosEmitidos.has(categoria)) {
-                        const rutaSonido = sonidosPorCategoria[categoria];
-                        if (rutaSonido) {
-                            reproducirSonidoRepetidoDesdeRuta(rutaSonido, 2);
-                            sonidosEmitidos.add(categoria);
-                        }
-                    }
-                });
-            }
-
-            if (offline === 0) {
-                sonidosEmitidos.clear();
-            }
 
             // Actualizar contadores
             onlineCount.textContent = online;
