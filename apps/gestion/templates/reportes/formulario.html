@@ -1,0 +1,115 @@
+<!-- filepath: /home/hector/Proyectos/Monitoreo/apps/gestion/templates/reportes/formulario.html -->
+{% extends 'base.html' %}
+
+{% block title %}Crear Reporte{% endblock %}
+
+{% block content %}
+
+<div class="container-fluid mt-4">
+
+    <h1 class="text-2xl font-bold mb-6">Crear Reporte</h1>
+
+    <form method="post" class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
+        {% csrf_token %}
+
+        <!-- Campo: nombre -->
+        <div class="mb-4">
+            <label class="block text-gray-700 text-sm font-bold mb-2">
+                Nombre
+            </label>
+            {{ form.nombre }}
+            {% if form.nombre.errors %}
+                <p class="text-red-500 text-xs mt-1">{{ form.nombre.errors.0 }}</p>
+            {% endif %}
+        </div>
+
+        <!-- Campo: ip -->
+        <div class="mb-4">
+            <label class="block text-gray-700 text-sm font-bold mb-2">
+                Dirección IP
+            </label>
+            {{ form.ip }}
+            {% if form.ip.errors %}
+                <p class="text-red-500 text-xs mt-1">{{ form.ip.errors.0 }}</p>
+            {% endif %}
+        </div>
+
+        <!-- Campo: enlace -->
+        <div class="mb-4">
+            <label class="block text-gray-700 text-sm font-bold mb-2">
+                Número de Sitio
+            </label>
+            {{ form.enlace }}
+            {% if form.enlace.errors %}
+                <p class="text-red-500 text-xs mt-1">{{ form.enlace.errors.0 }}</p>
+            {% endif %}
+        </div>
+
+        <!-- Campo: servicio -->
+        <div class="mb-4">
+            <label class="block text-gray-700 text-sm font-bold mb-2">
+                Número de Reporte
+            </label>
+            {{ form.servicio }}
+            {% if form.servicio.errors %}
+                <p class="text-red-500 text-xs mt-1">{{ form.servicio.errors.0 }}</p>
+            {% endif %}
+        </div>
+
+        <!-- Campo: que_cayo -->
+        <div class="mb-4">
+            <label class="block text-gray-700 text-sm font-bold mb-2">
+                Servicio
+            </label>
+            {{ form.que_cayo }}
+            {% if form.que_cayo.errors %}
+                <p class="text-red-500 text-xs mt-1">{{ form.que_cayo.errors.0 }}</p>
+            {% endif %}
+        </div>
+
+        <!-- Campo: personal_sitio -->
+        <div class="mb-4">
+            <label class="block text-gray-700 text-sm font-bold mb-2">
+                Personal en Sitio
+            </label>
+            {{ form.personal_sitio }}
+            {% if form.personal_sitio.errors %}
+                <p class="text-red-500 text-xs mt-1">{{ form.personal_sitio.errors.0 }}</p>
+            {% endif %}
+        </div>
+
+        <!-- Campo: telefono_contacto -->
+        <div class="mb-4">
+            <label class="block text-gray-700 text-sm font-bold mb-2">
+                Teléfono de Contacto
+            </label>
+            {{ form.telefono_contacto }}
+            {% if form.telefono_contacto.errors %}
+                <p class="text-red-500 text-xs mt-1">{{ form.telefono_contacto.errors.0 }}</p>
+            {% endif %}
+        </div>
+
+        <!-- Campo: observacion -->
+        <div class="mb-6">
+            <label class="block text-gray-700 text-sm font-bold mb-2">
+                Observación
+            </label>
+            {{ form.observacion }}
+            {% if form.observacion.errors %}
+                <p class="text-red-500 text-xs mt-1">{{ form.observacion.errors.0 }}</p>
+            {% endif %}
+        </div>
+
+        <!-- Botones -->
+        <div class="flex items-center justify-between">
+            <button type="submit" class="btn btn-primary">
+                Guardar
+            </button>
+            <a href="{% url 'reportes' %}" class="text-sm text-gray-600 hover:underline">
+                Cancelar
+            </a>
+        </div>
+    </form>
+
+</div>
+{% endblock %}

@@ -3,14 +3,18 @@
 {% block title %}{{ form.instance.pk|yesno:"Editar Icono,Nuevo Icono" }}{% endblock %}
 
 {% block content %}
-<h1 class="text-2xl font-bold mb-4">{{ form.instance.pk|yesno:"Editar Icono,Nuevo Icono" }}</h1>
 
-<form method="post" class="space-y-4 max-w-md">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
-        Guardar
-    </button>
-    <a href="{% url 'iconos' %}" class="ml-4 text-gray-600 hover:underline">Cancelar</a>
-</form>
+<div class="container-fluid mt-4">
+
+    <h1 class="text-2xl font-bold mb-4">{{ form.instance.pk|yesno:"Editar Icono,Nuevo Icono" }}</h1>
+
+    <form method="post" class="space-y-4 max-w-md">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="btn btn-primary">
+            Guardar
+        </button>
+        <a href="{% url 'iconos' %}" class="ml-4 text-gray-600 hover:underline">Cancelar</a>
+    </form>
+</div>
 {% endblock %}

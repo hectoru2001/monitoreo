@@ -3,85 +3,101 @@
 {% block title %}{{ titulo }}{% endblock %}
 
 {% block content %}
-<h1 class="text-2xl font-bold mb-6">{{ titulo }}</h1>
 
-<form method="post" class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
-    {% csrf_token %}
+<div class="container-fluid mt-4">
 
-    <!-- Campo: nombre -->
-    <div class="mb-4">
-        <label class="block text-gray-700 text-sm font-bold mb-2">
-            Nombre
-        </label>
-        {{ form.nombre }}
-        {% if form.nombre.errors %}
-            <p class="text-red-500 text-xs mt-1">{{ form.nombre.errors.0 }}</p>
-        {% endif %}
-    </div>
+    <h1 class="text-2xl font-bold mb-6">{{ titulo }}</h1>
 
-    <!-- Campo: ip -->
-    <div class="mb-4">
-        <label class="block text-gray-700 text-sm font-bold mb-2">
-            Dirección IP
-        </label>
-        {{ form.ip }}
-        {% if form.ip.errors %}
-            <p class="text-red-500 text-xs mt-1">{{ form.ip.errors.0 }}</p>
-        {% endif %}
-    </div>
+    <form method="post" class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
+        {% csrf_token %}
 
-    <!-- Campo: servicio -->
-    <div class="mb-4">
-        <label class="block text-gray-700 text-sm font-bold mb-2">
-            Número de sitio
-        </label>
-        {{ form.servicio }}
-        {% if form.servicio.errors %}
-            <p class="text-red-500 text-xs mt-1">{{ form.servicio.errors.0 }}</p>
-        {% endif %}
-    </div>
+        <!-- Campo: nombre -->
+        <div class="mb-4">
+            <label class="block text-gray-700 text-sm font-bold mb-2">
+                Nombre
+            </label>
+            {{ form.nombre }}
+            {% if form.nombre.errors %}
+                <p class="text-red-500 text-xs mt-1">{{ form.nombre.errors.0 }}</p>
+            {% endif %}
+        </div>
 
-    <!-- Campo: referncia -->
-    <div class="mb-4">
-        <label class="block text-gray-700 text-sm font-bold mb-2">
-            Referencia Enlace
-        </label>
-        {{ form.referencia }}
-        {% if form.referencia.errors %}
-            <p class="text-red-500 text-xs mt-1">{{ form.referncia.errors.0 }}</p>
-        {% endif %}
-    </div>
+        <!-- Campo: ip -->
+        <div class="mb-4">
+            <label class="block text-gray-700 text-sm font-bold mb-2">
+                Dirección IP
+            </label>
+            {{ form.ip }}
+            {% if form.ip.errors %}
+                <p class="text-red-500 text-xs mt-1">{{ form.ip.errors.0 }}</p>
+            {% endif %}
+        </div>
 
-    <!-- Campo: referencia2 -->
-    <div class="mb-4">
-        <label class="block text-gray-700 text-sm font-bold mb-2">
-            Referencia TKS
-        </label>
-        {{ form.referencia2 }}
-        {% if form.referencia2.errors %}
-            <p class="text-red-500 text-xs mt-1">{{ form.referencia2.errors.0 }}</p>
-        {% endif %}
-    </div>
+        <!-- Campo: servicio -->
+        <div class="mb-4">
+            <label class="block text-gray-700 text-sm font-bold mb-2">
+                Número de sitio
+            </label>
+            {{ form.servicio }}
+            {% if form.servicio.errors %}
+                <p class="text-red-500 text-xs mt-1">{{ form.servicio.errors.0 }}</p>
+            {% endif %}
+        </div>
 
-    <!-- Campo: categoria -->
-    <div class="mb-6">
-        <label class="block text-gray-700 text-sm font-bold mb-2">
-            Categoría
-        </label>
-        {{ form.categoria }}
-        {% if form.categoria.errors %}
-            <p class="text-red-500 text-xs mt-1">{{ form.categoria.errors.0 }}</p>
-        {% endif %}
-    </div>
+        <!-- Campo: referncia -->
+        <div class="mb-4">
+            <label class="block text-gray-700 text-sm font-bold mb-2">
+                Referencia Enlace
+            </label>
+            {{ form.referencia }}
+            {% if form.referencia.errors %}
+                <p class="text-red-500 text-xs mt-1">{{ form.referncia.errors.0 }}</p>
+            {% endif %}
+        </div>
 
-    <!-- Botones -->
-    <div class="flex items-center justify-between">
-        <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
-            Guardar
-        </button>
-        <a href="{% url 'servidores' %}" class="text-sm text-gray-600 hover:underline">
-            Cancelar
-        </a>
-    </div>
-</form>
+        <!-- Campo: referencia2 -->
+        <div class="mb-4">
+            <label class="block text-gray-700 text-sm font-bold mb-2">
+                Referencia TKS
+            </label>
+            {{ form.referencia2 }}
+            {% if form.referencia2.errors %}
+                <p class="text-red-500 text-xs mt-1">{{ form.referencia2.errors.0 }}</p>
+            {% endif %}
+        </div>
+
+        <!-- Campo: categoria -->
+        <div class="mb-6">
+            <label class="block text-gray-700 text-sm font-bold mb-2">
+                Categoría
+            </label>
+            {{ form.categoria }}
+            {% if form.categoria.errors %}
+                <p class="text-red-500 text-xs mt-1">{{ form.categoria.errors.0 }}</p>
+            {% endif %}
+        </div>
+
+        <!-- Campo: Proveedor-->
+        <div class="mb-6">
+            <label class="block text-gray-700 text-sm font-bold mb-2">
+                Proveedor
+            </label>
+            {{ form.proveedor }}
+            {% if form.proveedor.errors %}
+                <p class="text-red-500 text-xs mt-1">{{ form.proveedor.errors.0 }}</p>
+            {% endif %}
+        </div>
+
+        <!-- Botones -->
+        <div class="flex items-center justify-between">
+            <button type="submit" class="btn btn-primary">
+                Guardar
+            </button>
+            <a href="{% url 'servidores' %}" class="text-sm text-gray-600 hover:underline">
+                Cancelar
+            </a>
+        </div>
+    </form>
+
+</div>
 {% endblock %}

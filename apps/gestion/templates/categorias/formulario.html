@@ -3,32 +3,35 @@
 {% block title %}{{ titulo }}{% endblock %}
 
 {% block content %}
-<h1 class="text-2xl font-bold mb-6">{{ titulo }}</h1>
+<div class="container-fluid mt-4">
 
-<form method="post" class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
-    {% csrf_token %}
+    <h1 class="text-2xl font-bold mb-6">{{ titulo }}</h1>
 
-    <div class="mb-4">
-        <label class="block text-gray-700 text-sm font-bold mb-2">Nombre</label>
-        {{ form.nombre }}
-        {% if form.nombre.errors %}
-            <p class="text-red-500 text-xs mt-1">{{ form.nombre.errors.0 }}</p>
-        {% endif %}
-    </div>
+    <form method="post" class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
+        {% csrf_token %}
 
-    <div class="mb-6">
-        <label class="block text-gray-700 text-sm font-bold mb-2">Descripción</label>
-        {{ form.descripcion }}
-        {% if form.descripcion.errors %}
-            <p class="text-red-500 text-xs mt-1">{{ form.descripcion.errors.0 }}</p>
-        {% endif %}
-    </div>
+        <div class="mb-4">
+            <label class="block text-gray-700 text-sm font-bold mb-2">Nombre</label>
+            {{ form.nombre }}
+            {% if form.nombre.errors %}
+                <p class="text-red-500 text-xs mt-1">{{ form.nombre.errors.0 }}</p>
+            {% endif %}
+        </div>
 
-    <div class="flex items-center justify-between">
-        <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
-            Guardar
-        </button>
-        <a href="{% url 'categorias' %}" class="text-sm text-gray-600 hover:underline">Cancelar</a>
-    </div>
-</form>
+        <div class="mb-6">
+            <label class="block text-gray-700 text-sm font-bold mb-2">Descripción</label>
+            {{ form.descripcion }}
+            {% if form.descripcion.errors %}
+                <p class="text-red-500 text-xs mt-1">{{ form.descripcion.errors.0 }}</p>
+            {% endif %}
+        </div>
+
+        <div class="flex items-center justify-between">
+            <button type="submit" class="btn btn-primary">
+                Guardar
+            </button>
+            <a href="{% url 'categorias' %}" class="text-sm text-gray-600 hover:underline">Cancelar</a>
+        </div>
+    </form>
+</div>
 {% endblock %}

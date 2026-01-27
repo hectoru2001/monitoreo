@@ -42,17 +42,27 @@ function reproducirSonidoRepetidoDesdeRuta(ruta, repeticiones = 3) {
     audio.play().catch(e => console.warn('No se pudo reproducir:', e));
 }
 
+let modalServidor = null;
+
 function abrirModal() {
-    const modal = document.getElementById('modal-servidor');
-    modal.classList.remove('hidden');
-    modal.classList.add('flex');
+    const modalEl = document.getElementById('modal-servidor');
+
+    if (!modalServidor) {
+        modalServidor = new bootstrap.Modal(modalEl, {
+            backdrop: 'static',
+            keyboard: true
+        });
+    }
+
+    modalServidor.show();
 }
 
 function cerrarModal() {
-    const modal = document.getElementById('modal-servidor');
-    modal.classList.add('hidden');
-    modal.classList.remove('flex');
+    if (modalServidor) {
+        modalServidor.hide();
+    }
 }
+
 
 function enviarReporte() {
     const form = document.getElementById('form-reporte');
@@ -88,6 +98,8 @@ function getCSRFToken() {
 const MAX_FALLOS = 3;
 const form = document.getElementById('form-reporte');
 
+// En panel.js, actualizar la función actualizarEstados():
+
 function actualizarEstados() {
     fetch('/panel/ping-status/')
         .then(res => res.json())
@@ -96,30 +108,29 @@ function actualizarEstados() {
             const timestamp = document.getElementById('ultima-actualizacion');
             const onlineCount = document.getElementById('online-count');
             const offlineCount = document.getElementById('offline-count');
+            const errorMessage = document.getElementById('error-message');
 
             const now = new Date();
-            timestamp.textContent = `Última actualización: ${now.toLocaleTimeString()}`;
+            const timeStr = now.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+            timestamp.textContent = `Actualizado: ${timeStr}`;
 
             let online = 0;
             let offline = 0;
-            contenedor.innerHTML = '';
+            let contenidoHTML = '';
 
             const categoriasConCaidaNueva = new Set();
 
             for (const categoria in data) {
                 const servidores = data[categoria];
-
-                const categoriaContainer = document.createElement('section');
-                categoriaContainer.className = 'mb-8 p-4 bg-gray-100 rounded-lg shadow-sm';
-
-                const encabezado = document.createElement('h2');
-                encabezado.textContent = categoria;
-                encabezado.className = 'text-2xl font-semibold text-gray-800 mb-4 border-b pb-2';
-                categoriaContainer.appendChild(encabezado);
-
-                const servidoresContainer = document.createElement('div');
-                servidoresContainer.className = 'flex flex-wrap gap-3';
-
+                const categoriaCount = servidores.length;
+                
+                // Contar servidores por estado en esta categoría
+                let catOnline = 0;
+                let catOffline = 0;
+                
+                // Crear HTML de tarjetas para esta categoría
+                let tarjetasHTML = '';
+                
                 servidores.forEach(servidor => {
                     const nombre = servidor.nombre;
                     const responde = servidor.status === 'Online';
@@ -134,121 +145,100 @@ function actualizarEstados() {
                         fallosConsecutivos[nombre]++;
                     }
 
-                    let estado;
+                    let estado, estadoClass, statusClass;
+                    
                     if (fallosConsecutivos[nombre] === 0) {
-                        estado = 'Online';
+                        estado = 'ON';
+                        estadoClass = 'online';
+                        statusClass = 'status-online';
+                        catOnline++;
                         online++;
                     } else if (fallosConsecutivos[nombre] <= 2) {
-                        estado = 'Inestable';
+                        estado = 'INS';
+                        estadoClass = 'inestable';
+                        statusClass = 'status-inestable';
+                        catOnline++;
                         online++;
                     } else if (fallosConsecutivos[nombre] <= 6) {
-                        estado = 'Degradado';
+                        estado = 'DEG';
+                        estadoClass = 'degradado';
+                        statusClass = 'status-degradado';
+                        catOnline++;
                         online++;
                     } else {
-                        estado = 'Offline';
+                        estado = 'OFF';
+                        estadoClass = 'offline';
+                        statusClass = 'status-offline';
+                        catOffline++;
                         offline++;
                     }
 
-
                     const estadoPrevio = estadoPrevioServidores[nombre];
-
-                    if (estadoPrevio === 'Online' && estado === 'Offline') {
+                    if (estadoPrevio === 'ON' && estado === 'OFF') {
                         categoriasConCaidaNueva.add(categoria);
                     }
-
                     estadoPrevioServidores[nombre] = estado;
 
-                    let bgColor, textColor, borderColor, dotColor;
+                    // Crear tarjeta compacta
+                    tarjetasHTML += `
+                        <div class="server-card small ${estadoClass}"
+                            data-ip="${servidor.ip}"
+                            data-nombre="${servidor.nombre}"
+                            data-bs-toggle="tooltip"
+                            data-bs-html="true"
+                            data-bs-title="
+                                <div style='min-width:140px'>
+                                    <div><strong>IP:</strong> ${servidor.ip}</div>
+                                </div>
+                            "
+                            onclick="cargarServidor('${servidor.ip}')">
 
-                    switch (estado) {
-                        case 'Online':
-                            bgColor = 'bg-green-100';
-                            textColor = 'text-green-700';
-                            borderColor = 'border-green-300';
-                            dotColor = 'bg-green-500';
-                            break;
-                        case 'Inestable':
-                            bgColor = 'bg-yellow-100';
-                            textColor = 'text-yellow-700';
-                            borderColor = 'border-yellow-300';
-                            dotColor = 'bg-yellow-500';
-                            break;
-                        case 'Degradado':
-                            bgColor = 'bg-orange-100';
-                            textColor = 'text-orange-700';
-                            borderColor = 'border-orange-300';
-                            dotColor = 'bg-orange-500';
-                            break;
-                        default:
-                            bgColor = 'bg-red-100';
-                            textColor = 'text-red-700';
-                            borderColor = 'border-red-300';
-                            dotColor = 'bg-red-500';
-                    }
-
-                    const card = document.createElement('div');
-                    card.className = `flex items-center gap-2 px-4 py-2 rounded-full border ${borderColor} ${bgColor} cursor-default transition hover:shadow-lg`;
-
-                    card.innerHTML = `
-                        <span class="w-3 h-3 rounded-full ${dotColor} inline-block"></span>
-                        <span class="font-semibold ${textColor}" data-tippy-content="IP: ${servidor.ip}">
-                            ${servidor.nombre}
-                        </span>
+                            <span class="server-name">${nombre}</span>
+                            <span class="status-dot-mini">
+                                ${
+                                    estado === 'ON' ? '🟢' :
+                                    estado === 'INS' ? '🟡' :
+                                    estado === 'DEG' ? '🟠' :
+                                    '🔴'
+                                }
+                            </span>
+                        </div>
                     `;
 
-                    card.addEventListener('click', () => {
-                        const ip = encodeURIComponent(servidor.ip);
-
-                        fetch(`/gestion/api/servidor/${ip}/`)
-                            .then(res => {
-                                if (!res.ok) throw new Error('No encontrado');
-                                return res.json();
-                            })
-                            .then(data => {
-                                // inputs normales
-                                form.nombre.value = data.nombre ?? '';
-                                form.ip.value = data.ip ?? '';
-                                form.enlace.value = data.servicio ?? '';
-                                // select ¿Qué cayó?
-                                const select = document.getElementById('que_cayo');
-                                select.innerHTML = '<option value="">Selecciona una opción</option>';
-
-                                if (data.referencia) {
-                                    const opt1 = document.createElement('option');
-                                    opt1.value = data.referencia;
-                                    opt1.textContent = "Referencia Enlace - " + data.referencia;
-                                    select.appendChild(opt1);
-                                }
-
-                                if (data.referencia2) {
-                                    const opt2 = document.createElement('option');
-                                    opt2.value = data.referencia2;
-                                    opt2.textContent = "Referencia TKS - " + data.referencia2;
-                                    select.appendChild(opt2);
-                                }
-
-                                abrirModal();
-                            })
-                            .catch(err => {
-                                console.error('Error cargando servidor:', err);
-                                alert('No se pudo cargar la información del servidor');
-                            });
-                    });
 
 
-                    servidoresContainer.appendChild(card);
                 });
 
-                categoriaContainer.appendChild(servidoresContainer);
-                contenedor.appendChild(categoriaContainer);
+                // Agregar sección de categoría
+                contenidoHTML += `
+                    <div class="category-section">
+                        <div class="category-header">
+                            <span>${categoria}</span>
+                            <span class="category-count">${catOnline}/${catOnline + catOffline}</span>
+                        </div>
+                        <div class="server-grid">
+                            ${tarjetasHTML}
+                        </div>
+                    </div>
+                `;
             }
 
+            // Actualizar contenido
+            contenedor.innerHTML = contenidoHTML;
+
+            const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]');
+            tooltipTriggerList.forEach(el => {
+                new bootstrap.Tooltip(el);
+            });
+
+
+            // Manejo de sonidos
             if (sonidosActivos) {
                 categoriasConCaidaNueva.forEach(categoria => {
                     if (!sonidosEmitidos.has(categoria)) {
                         const rutaSonido = sonidosPorCategoria[categoria];
                         if (rutaSonido) {
-                            reproducirSonidoRepetidoDesdeRuta(rutaSonido, 3);
+                            reproducirSonidoRepetidoDesdeRuta(rutaSonido, 2);
                             sonidosEmitidos.add(categoria);
                         }
                     }
@@ -259,19 +249,63 @@ function actualizarEstados() {
                 sonidosEmitidos.clear();
             }
 
+            // Actualizar contadores
             onlineCount.textContent = online;
             offlineCount.textContent = offline;
 
-            tippy('[data-tippy-content]', {
-                placement: 'top',
-                animation: 'shift-away',
-                delay: [100, 50],
-                theme: 'light-border'
-            });
+            // Ocultar mensaje de error
+            if (errorMessage) {
+                errorMessage.classList.add('d-none');
+            }
+
         })
         .catch(error => {
             console.error('Error al obtener estados:', error);
-            document.getElementById('error-message').classList.remove('hidden');
+            const errorMessage = document.getElementById('error-message');
+            if (errorMessage) {
+                errorMessage.classList.remove('d-none');
+            }
+        });
+}
+
+// Función auxiliar para cargar servidor
+function cargarServidor(ip) {
+    const encodedIp = encodeURIComponent(ip);
+    const form = document.getElementById('form-reporte');
+
+    fetch(`/gestion/api/servidor/${encodedIp}/`)
+        .then(res => {
+            if (!res.ok) throw new Error('No encontrado');
+            return res.json();
+        })
+        .then(data => {
+            form.nombre.value = data.nombre ?? '';
+            form.ip.value = data.ip ?? '';
+            form.enlace.value = data.servicio ?? '';
+            
+            // Select ¿Qué cayó?
+            const select = document.getElementById('que_cayo');
+            select.innerHTML = '<option value="">Selecciona una opción</option>';
+
+            if (data.referencia) {
+                const opt1 = document.createElement('option');
+                opt1.value = data.referencia;
+                opt1.textContent = "Ref. Enlace - " + data.referencia;
+                select.appendChild(opt1);
+            }
+
+            if (data.referencia2) {
+                const opt2 = document.createElement('option');
+                opt2.value = data.referencia2;
+                opt2.textContent = "Ref. TKS - " + data.referencia2;
+                select.appendChild(opt2);
+            }
+
+            abrirModal();
+        })
+        .catch(err => {
+            console.error('Error cargando servidor:', err);
+            showAlert('Error cargando servidor', 'danger');
         });
 }
 
@@ -290,24 +324,54 @@ document.getElementById('form-conexion')?.addEventListener('submit', e => {
 document.addEventListener('DOMContentLoaded', () => {
     const switchSonido = document.getElementById('activar-sonidos');
 
+    // 🔊 Audio global
+    const audioAlerta = document.getElementById('sonido-alerta');
+
+    // 🔁 Cargar preferencia guardada
+    const guardado = localStorage.getItem('sonidosActivos');
+    if (guardado === 'true' && switchSonido) {
+        switchSonido.checked = true;
+
+        // intento de desbloqueo (solo funcionará si ya hubo interacción antes)
+        audioAlerta.play().then(() => {
+            audioAlerta.pause();
+            audioAlerta.currentTime = 0;
+            sonidosActivos = true;
+        }).catch(() => {});
+    }
+
+    // 🎚️ Escuchar cambio del switch
     if (switchSonido) {
         switchSonido.addEventListener('change', (e) => {
             sonidosActivos = e.target.checked;
-            if (sonidosActivos) activarSonidos();
+            localStorage.setItem('sonidosActivos', sonidosActivos);
+
+            if (sonidosActivos) {
+                // 🔓 desbloqueo REAL del audio
+                audioAlerta.play().then(() => {
+                    audioAlerta.pause();
+                    audioAlerta.currentTime = 0;
+                    console.log('🔊 Sonidos activados');
+                }).catch(err => {
+                    console.warn('No se pudo activar el audio:', err);
+                });
+            } else {
+                console.log('🔇 Sonidos desactivados');
+            }
         });
     }
 
+    // 📩 Formulario
     if (form){
         form.addEventListener('submit', function (e) {
-            e.preventDefault(); 
-
+            e.preventDefault();
             enviarReporte();
         });
 
-        document.getElementById('cerrar-modal').addEventListener('click', cerrarModal);
+        document.getElementById('cerrar-modal')
+            ?.addEventListener('click', cerrarModal);
     }
 
-
     actualizarEstados();
-    setInterval(actualizarEstados, 5000); // ajusta el intervalo si quieres
+    setInterval(actualizarEstados, 5000);
 });

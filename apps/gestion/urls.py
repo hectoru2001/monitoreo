@@ -22,6 +22,7 @@ urlpatterns = [
 
     # Reportes
     path('reportes/', views.lista_reportes, name='reportes'),
+    path('reportes/nuevo/', views.crear_reporte, name='crear_reporte'),
 
     # API Endpoints
     path('api/servidor/<str:ip>/', views.obtener_servidor, name='obtener_servidor'),

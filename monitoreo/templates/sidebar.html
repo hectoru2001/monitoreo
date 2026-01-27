@@ -1,61 +1,83 @@
 <!-- templates/includes/sidebar.html -->
 <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
 
-<aside class="w-64 bg-white border-r border-gray-200 shadow-sm flex flex-col min-h-screen">
-    <div class="p-6 border-b">
-        <h1 class="text-2xl font-bold text-gray-800">Panel</h1>
-        <p class="text-sm text-gray-500">Monitoreo de red local</p>
+<aside class="px-0 bg-white border-end shadow-sm d-flex flex-column vh-100" style="width: 220px;">
+    <div class="p-3 border-bottom">
+        <h1 class="h4 fw-bold text-primary mb-0">Panel Principal</h1>
+        <p class="text-muted small mb-0">Monitoreo de redes</p>
     </div>
     
-    <nav class="flex-1 px-4 py-6 space-y-2" x-data="{ routerOpen: false }">
+    <nav class="flex-grow-1 p-3">
         <!-- Servidores -->
-        <a href="{% url 'index' %}" class="flex items-center px-4 py-2 rounded hover:bg-gray-100 text-gray-700 transition">
-            <i class="fas fa-server mr-3 text-gray-500"></i>
+        <a href="{% url 'index' %}" class="d-flex align-items-center px-3 py-2 rounded text-decoration-none text-dark mb-2 hover-primary">
+            <i class="fas fa-server me-3 text-primary"></i>
             <span>Panel Principal</span>
         </a>
 
         <!-- Routers con submenú -->
-        <div x-data="{ routerOpen: false }" class="space-y-1">
+        <div x-data="{ routerOpen: false }" class="mb-2">
             <button
                 @click="routerOpen = !routerOpen"
-                class="flex items-center w-full px-4 py-2 rounded hover:bg-gray-100 text-gray-700 transition focus:outline-none focus:ring-2 focus:ring-indigo-200"
+                class="d-flex align-items-center w-100 px-3 py-2 rounded border-0 bg-transparent text-dark hover-primary text-start"
+                type="button"
                 aria-expanded="false"
             >
-                <i class="fas fa-briefcase mr-3 text-gray-500"></i>
-                <span class="flex-1 text-left">Gestión</span>
-                <i class="fas fa-chevron-down ml-auto text-gray-500 text-sm transition-transform duration-200"
-                :class="{ 'rotate-180': routerOpen }"></i>
+                <i class="fas fa-briefcase me-3 text-primary"></i>
+                <span class="flex-grow-1">Conexiones</span>
+                <i class="fas fa-chevron-down ms-auto text-primary small transition"
+                   :class="{ 'rotate-180': routerOpen }"></i>
             </button>
 
-            <div x-show="routerOpen" x-cloak class="pl-12 mt-1 space-y-1 transition-all duration-300 ease-in-out">
-                <a href="{% url 'servidores' %}" class="block px-2 py-1 text-sm text-gray-600 hover:bg-gray-100 rounded flex items-center">
-                    <i class="fas fa-link mr-2 text-gray-400"></i> Conexiones
+            <div x-show="routerOpen" x-cloak class="ps-4 mt-1">
+                <a href="{% url 'crear_servidor' %}" class="d-flex align-items-center px-2 py-1 small text-dark text-decoration-none rounded mb-1 hover-primary">
+                    <i class="fas fa-plus me-2 text-primary opacity-75"></i> Nueva Conexión
                 </a>
-                <a href="{% url 'categorias' %}" class="block px-2 py-1 text-sm text-gray-600 hover:bg-gray-100 rounded flex items-center">
-                    <i class="fas fa-tags mr-2 text-gray-400"></i> Categorías
+                <a href="{% url 'servidores' %}" class="d-flex align-items-center px-2 py-1 small text-dark text-decoration-none rounded mb-1 hover-primary">
+                    <i class="fas fa-link me-2 text-primary opacity-75"></i> Listado Conexiones
+                </a>
+                <a href="{% url 'categorias' %}" class="d-flex align-items-center px-2 py-1 small text-dark text-decoration-none rounded hover-primary">
+                    <i class="fas fa-tags me-2 text-primary opacity-75"></i> Categorías
                 </a>
             </div>
         </div>
 
-        <a href="{% url 'reportes' %}" class="flex items-center px-4 py-2 rounded hover:bg-gray-100 text-gray-700 transition">
-            <i class="fas fa-file-alt mr-3 text-gray-500"></i>
-            <span>Reportes</span>
-        </a>
+        <div x-data="{ reportOpen: false }" class="mb-2">
+            <button
+            @click="reportOpen = !reportOpen"
+            class="d-flex align-items-center w-100 px-3 py-2 rounded border-0 bg-transparent text-dark hover-primary text-start"
+            type="button"
+            aria-expanded="false"
+            >
+            <i class="fas fa-file-alt me-3 text-primary"></i>
+            <span class="flex-grow-1">Reportes</span>
+            <i class="fas fa-chevron-down ms-auto text-primary small transition"
+               :class="{ 'rotate-180': reportOpen }"></i>
+            </button>
+
+            <div x-show="reportOpen" x-cloak class="ps-4 mt-1">
+                <a href="{% url 'crear_reporte' %}" class="d-flex align-items-center px-2 py-1 small text-dark text-decoration-none rounded hover-primary">
+                    <i class="fas fa-plus me-2 text-primary opacity-75"></i> Crear Reporte
+                </a>
+                <a href="{% url 'reportes' %}" class="d-flex align-items-center px-2 py-1 small text-dark text-decoration-none rounded mb-1 hover-primary">
+                    <i class="fas fa-list me-2 text-primary opacity-75"></i> Listado Reportes
+                </a>
+            </div>
+        </div>
     </nav>
 
     <!-- Usuario y Logout al final -->
-    <div class="p-4 border-t">
+    <div class="p-3 border-top mt-auto">
         {% if user.is_authenticated %}
-        <div class="flex items-center justify-between text-gray-700">
-            <div class="flex items-center space-x-2">
-                <i class="fas fa-user-circle text-gray-500"></i>
-                <span class="font-medium">{{ user.first_name }} {{ user.last_name }}</span>
+        <div class="d-flex align-items-center justify-content-between text-dark">
+            <div class="d-flex align-items-center">
+                <i class="fas fa-user-circle text-primary me-2"></i>
+                <span class="fw-medium">{{ user.first_name }} {{ user.last_name }}</span>
             </div>
-            <form method="post" action="{% url 'logout' %}">
+            <form method="post" action="{% url 'logout' %}" class="mb-0">
                 {% csrf_token %}
                 <button
                     type="submit"
-                    class="text-red-600 hover:text-red-800 focus:outline-none"
+                    class="btn btn-link text-danger p-0"
                     title="Cerrar sesión"
                 >
                     <i class="fas fa-sign-out-alt"></i>
@@ -63,13 +85,14 @@
             </form>
         </div>
         {% else %}
-        <a href="{% url 'login' %}" class="flex items-center justify-center text-blue-600 hover:text-blue-800 text-sm font-medium">
-            <i class="fas fa-sign-in-alt mr-1"></i> Iniciar sesión
+        <a href="{% url 'login' %}" class="d-flex align-items-center justify-content-center text-primary text-decoration-none small fw-medium">
+            <i class="fas fa-sign-in-alt me-1"></i> Iniciar sesión
         </a>
         {% endif %}
     </div>
 
-    <div class="p-4 border-t text-sm text-gray-400">
+    <div class="p-3 border-top small text-muted">
         
     </div>
 </aside>
+

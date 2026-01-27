@@ -5,41 +5,99 @@
 {% block title %}Servidores{% endblock %}
 
 {% block content %}
+
+<div class="container-fluid mt-4">
+
 <h1 class="text-2xl font-bold mb-4">Servidores</h1>
 
-<a href="{% url 'crear_servidor' %}" class="inline-block mb-4 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
-    + Nuevo Servidor
-</a>
+<form method="get" class="bg-white p-4 mb-4 rounded shadow">
+    <div class="row g-3">
 
-<table class="min-w-full bg-white shadow rounded">
-    <thead>
-        <tr>
-            <th class="py-2 px-4 border-b text-left">Nombre</th>
-            <th class="py-2 px-4 border-b text-left">IP</th>
-            <th class="py-2 px-4 border-b text-left">Número de Sitio</th>
-            <th class="py-2 px-4 border-b text-left">Referencia Enlace</th>
-            <th class="py-2 px-4 border-b text-left">Referencia TKS</th>
-            <th class="py-2 px-4 border-b text-left">Categoría</th>
-            <th class="py-2 px-4 border-b text-left">Acciones</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for servidor in servidores %}
-        <tr class="hover:bg-gray-100">
-            <td class="py-2 px-4 border-b">{{ servidor.nombre }}</td>
-            <td class="py-2 px-4 border-b font-mono">{{ servidor.ip }}</td>
-            <td class="py-2 px-4 border-b">{{ servidor.servicio|default_if_none:""}}</td>
-            <td class="py-2 px-4 border-b">{{ servidor.referencia|default:"" }}</td>
-            <td class="py-2 px-4 border-b">{{ servidor.referencia2|default:"" }}</td>
-            <td class="py-2 px-4 border-b">{{ servidor.categoria.nombre }}</td>
-            <td class="py-2 px-4 border-b space-x-2">
-                <a href="{% url 'editar_servidor' servidor.pk %}" class="text-yellow-600 hover:underline">Editar</a>
-                <a href="{% url 'eliminar_servidor' servidor.pk %}" class="text-red-600 hover:underline">Eliminar</a>
-            </td>
-        </tr>
-        {% empty %}
-        <tr><td colspan="4" class="py-4 text-center text-gray-500">No hay servidores registrados.</td></tr>
-        {% endfor %}
-    </tbody>
-</table>
+        <div class="col-md-4">
+            <input
+                type="text"
+                name="q"
+                value="{{ request.GET.q }}"
+                placeholder="Nombre, IP, proveedor o referencia"
+                class="form-control"
+            >
+        </div>
+
+        <div class="col-md-3">
+            <select name="categoria" class="form-select">
+                <option value="">Todas las categorías</option>
+                {% for c in categorias %}
+                    <option value="{{ c.id }}"
+                        {% if request.GET.categoria == c.id|stringformat:"s" %}
+                            selected
+                        {% endif %}
+                    >
+                        {{ c.nombre }}
+                    </option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="col-md-3">
+            <input
+                type="text"
+                name="proveedor"
+                value="{{ request.GET.proveedor }}"
+                placeholder="Proveedor"
+                class="form-control"
+            >
+        </div>
+
+        <div class="col-md-2">
+            <div class="d-flex gap-2">
+                <button type="submit" class="btn btn-primary">
+                    Filtrar
+                </button>
+
+                <a href="{% url 'servidores' %}" class="btn btn-secondary">
+                    Limpiar
+                </a>
+            </div>
+        </div>
+
+    </div>
+</form>
+
+
+<div class="table-container">
+    <table class="custom-table">
+        <thead>
+            <tr>
+                <th>Nombre</th>
+                <th>IP</th>
+                <th>Número de Sitio</th>
+                <th>Referencia Enlace</th>
+                <th>Referencia TKS</th>
+                <th>Categoría</th>
+                <th>Proveedor</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for servidor in servidores %}
+            <tr class="hover:bg-gray-100">
+                <td>{{ servidor.nombre }}</td>
+                <td class=" font-mono">{{ servidor.ip }}</td>
+                <td>{{ servidor.servicio|default_if_none:""}}</td>
+                <td>{{ servidor.referencia|default:"" }}</td>
+                <td>{{ servidor.referencia2|default:"" }}</td>
+                <td>{{ servidor.categoria.nombre }}</td>
+                <td>{{ servidor.proveedor}}</td>
+                <td class=" space-x-2">
+                    <a href="{% url 'editar_servidor' servidor.pk %}" class="text-yellow-600 hover:underline">Editar</a>
+                    <a href="{% url 'eliminar_servidor' servidor.pk %}" class="text-red-600 hover:underline">Eliminar</a>
+                </td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="4" class="py-4 text-center text-gray-500">No hay servidores registrados.</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+</div>
 {% endblock %}

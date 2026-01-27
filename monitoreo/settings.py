@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-*n&goi$db!=5odf4zdf8tp0foey0*$dz+%#qli0(63c2vbj!y0
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['10.236.0.33', '10.236.62.93', 'localhost', 'monitoreo.gobjuarez.mpio']
+ALLOWED_HOSTS = ['10.236.0.33', '10.236.62.93', 'localhost', 'monitoreo.gobjuarez.mpio', '127.0.0.1']
 CSRF_TRUSTED_ORIGINS = ['http://10.236.62.93:8082', 'https://monitoreo.gobjuarez.mpio']
 
 # Application definition

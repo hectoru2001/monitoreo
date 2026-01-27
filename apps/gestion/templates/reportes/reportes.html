@@ -1,0 +1,192 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Reportes{% endblock %}
+
+{% block content %}
+<div class="container-fluid mt-4">
+    <h1 class="h2 mb-4">Reportes</h1>
+
+    <!-- FILTROS -->
+    <form method="get" class="bg-white p-4 mb-4 rounded shadow">
+        <div class="row g-3">
+            <div class="col-md-3">
+                <input
+                    type="text"
+                    name="q"
+                    value="{{ request.GET.q }}"
+                    placeholder="Nombre, IP o Referencia"
+                    class="form-control"
+                >
+            </div>
+            
+            <div class="col-md-1">
+                <select name="estatus" class="form-select">
+                    <option value="">Todos</option>
+                    <option value="1" {% if request.GET.estatus == '1' %}selected{% endif %}>Abiertos</option>
+                    <option value="2" {% if request.GET.estatus == '2' %}selected{% endif %}>Cerrados</option>
+                </select>
+            </div>
+            
+            <div class="col-md-3">
+                <input
+                    type="date"
+                    name="fecha_inicio"
+                    value="{{ request.GET.fecha_inicio }}"
+                    class="form-control"
+                >
+            </div>
+            
+            <div class="col-md-3">
+                <input
+                    type="date"
+                    name="fecha_fin"
+                    value="{{ request.GET.fecha_fin }}"
+                    class="form-control"
+                >
+            </div>
+            
+            <div class="col-2">
+                <div class="d-flex gap-2">
+                    <button
+                        type="submit"
+                        class="btn btn-primary"
+                    >
+                        Filtrar
+                    </button>
+                    
+                    <a
+                        href="{% url 'reportes' %}"
+                        class="btn btn-secondary"
+                    >
+                        Limpiar
+                    </a>
+                </div>
+            </div>
+        </div>
+    </form>
+
+    <!-- TABLA -->
+    <div class="table-container">
+        <table class="custom-table">
+            <thead class="table-light">
+                <tr>
+                    <th>ID</th>
+                    <th>Nombre</th>
+                    <th>IP</th>
+                    <th># Reporte</th>
+                    <th>Referencia Caída</th>
+                    <th>Fecha de Creación</th>
+                    <th>Quién Creó</th>
+                    <th>Observaciones</th>
+                    <th>Personal en Sitio</th>
+                    <th>Fecha Levanta</th>
+                    <th>Observaciones Finales</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for r in reportes %}
+                <tr class="
+                        {% if r.proveedor == 'MegaCable' %}table-danger
+                        {% elif r.proveedor == 'IZZI' %}table-success
+                        {% elif r.proveedor == 'Telmex' %}table-primary
+                        {% else %}{% endif %}">
+                    <td>{{ r.id }}</td>
+                    <td>{{ r.nombre }}</td>
+                    <td class="font-monospace">{{ r.ip }}</td>
+                    <td>{{ r.servicio|default_if_none:"" }}</td>
+                    <td>{{ r.que_cayo|default:"" }}</td>
+                    <td>{{ r.fecha }}</td>
+                    <td>{{ r.quien_levanta.get_full_name }}</td>
+                    <td>{{ r.observacion|default:"" }}</td>
+                    <td>{{ r.personal_sitio|default:"" }}</td>
+                    <td>
+                        {% if r.fecha_levanta %}
+                            {{ r.fecha_levanta }}
+                        {% else %}
+                            <span class="badge bg-warning text-dark">
+                                Aún sin responder
+                            </span>
+                        {% endif %}
+                    </td>
+                    <td>{{ r.observaciones_finales|default:"" }}</td>
+                    <td>
+                        {% if r.estatus == 1 %}
+                            <button
+                                class="btn btn-success btn-sm"
+                                onclick="abrirModalCerrar({{ r.id }})">
+                                Cerrar
+                            </button>
+                        {% else %}
+                            <span class="text-muted">Cerrado</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="12" class="text-center py-4 text-muted">
+                        No hay reportes.
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Modal -->
+<div id="modal-cerrar" class="modal fade" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Cerrar Reporte</h5>
+                <button type="button" class="btn-close" onclick="cerrarModalCerrar()" aria-label="Close"></button>
+            </div>
+            
+            <form id="form-cerrar" method="post">
+                {% csrf_token %}
+                
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">Observaciones finales</label>
+                        <textarea
+                            name="observaciones_finales"
+                            class="form-control"
+                            rows="4"
+                            required></textarea>
+                    </div>
+                </div>
+                
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" onclick="cerrarModalCerrar()">
+                        Cancelar
+                    </button>
+                    <button type="submit" class="btn btn-primary">
+                        Confirmar cierre
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+function abrirModalCerrar(idReporte) {
+    const form = document.getElementById('form-cerrar');
+    form.action = `/gestion/api/cerrar_reporte/${idReporte}/`;
+    
+    // Usando Bootstrap modal
+    const modalElement = document.getElementById('modal-cerrar');
+    const modal = new bootstrap.Modal(modalElement);
+    modal.show();
+}
+
+function cerrarModalCerrar() {
+    const modalElement = document.getElementById('modal-cerrar');
+    const modal = bootstrap.Modal.getInstance(modalElement);
+    modal.hide();
+}
+</script>
+
+{% endblock %}

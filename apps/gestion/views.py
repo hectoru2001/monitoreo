@@ -2,7 +2,7 @@
 
 from django.shortcuts import render, redirect, get_object_or_404
 from .models import Iconos, Servidor, Categoria, Reportes
-from .forms import IconoForm, ServidorForm, CategoriaForm
+from .forms import IconoForm, ServidorForm, CategoriaForm, ReporteForm
 from django.http import JsonResponse
 from django.utils import timezone
 from django.db.models import Q
@@ -99,6 +99,20 @@ def eliminar_categoria(request, pk):
         'tipo': 'Categoría'
     })
 
+# -------- Reportes -------- #
+def crear_reporte(request):
+    if request.method == 'POST':
+        form = ReporteForm(request.POST)
+        if form.is_valid():
+            reporte = form.save(commit=False) 
+            reporte.quien_levanta = request.user  
+            reporte.save()
+            return redirect('reportes')
+    else:
+        form = ReporteForm()
+
+    return render(request, 'reportes/formulario.html', {'form': form})
+
 def lista_reportes(request):
     reportes = Reportes.objects.all().select_related('quien_levanta')
 
@@ -116,7 +130,6 @@ def lista_reportes(request):
         )
 
     if estatus in ['1', '2']:
-
         reportes = reportes.filter(estatus=int(estatus))
 
     if fecha_inicio:
@@ -127,7 +140,15 @@ def lista_reportes(request):
 
     reportes = reportes.order_by('-fecha')
 
-    return render(request, 'reportes.html', {
+    # Mapear IP -> proveedor
+    servidores = Servidor.objects.all()
+    ip_a_proveedor = {str(s.ip): s.proveedor for s in servidores}
+
+    # Asignar proveedor a cada reporte
+    for r in reportes:
+        r.proveedor = ip_a_proveedor.get(str(r.ip), "Desconocido")
+
+    return render(request, 'reportes/reportes.html', {
         'reportes': reportes
     })
 
