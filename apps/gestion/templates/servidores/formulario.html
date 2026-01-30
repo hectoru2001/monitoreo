@@ -1,5 +1,7 @@
 {% extends 'base.html' %}
 
+{% load static %}
+
 {% block title %}{{ titulo }}{% endblock %}
 
 {% block content %}
@@ -22,6 +24,17 @@
             {% endif %}
         </div>
 
+        <!-- Campo: categoria -->
+        <div class="mb-6">
+            <label class="block text-gray-700 text-sm font-bold mb-2">
+                Categoría
+            </label>
+            {{ form.categoria }}
+            {% if form.categoria.errors %}
+                <p class="text-red-500 text-xs mt-1">{{ form.categoria.errors.0 }}</p>
+            {% endif %}
+        </div>
+
         <!-- Campo: ip -->
         <div class="mb-4">
             <label class="block text-gray-700 text-sm font-bold mb-2">
@@ -30,6 +43,16 @@
             {{ form.ip }}
             {% if form.ip.errors %}
                 <p class="text-red-500 text-xs mt-1">{{ form.ip.errors.0 }}</p>
+            {% endif %}
+        </div>
+
+        <div class="mb-4">
+            <label id="lbl-puerto" class="block text-gray-700 text-sm font-bold hidden mb-2">
+                Puerto
+            </label>
+            {{ form.puerto }}
+            {% if form.puerto.errors %}
+                <p class="text-red-500 text-xs mt-1">{{ form.puerto.errors.0 }}</p>
             {% endif %}
         </div>
 
@@ -66,17 +89,6 @@
             {% endif %}
         </div>
 
-        <!-- Campo: categoria -->
-        <div class="mb-6">
-            <label class="block text-gray-700 text-sm font-bold mb-2">
-                Categoría
-            </label>
-            {{ form.categoria }}
-            {% if form.categoria.errors %}
-                <p class="text-red-500 text-xs mt-1">{{ form.categoria.errors.0 }}</p>
-            {% endif %}
-        </div>
-
         <!-- Campo: Proveedor-->
         <div class="mb-6">
             <label class="block text-gray-700 text-sm font-bold mb-2">
@@ -100,4 +112,6 @@
     </form>
 
 </div>
+
+<script src="{% static 'js/formulario.js' %}"></script>
 {% endblock %}

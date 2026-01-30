@@ -199,6 +199,10 @@ function actualizarEstados() {
 
 
                     // Crear tarjeta compacta
+                    const puertoHTML = servidor.puerto
+                    ? `<div><strong>Puerto:</strong> ${servidor.puerto}</div>`
+                    : "";
+
                     tarjetasHTML += `
                         <div class="server-card small ${estadoClass}"
                             data-ip="${servidor.ip}"
@@ -208,6 +212,7 @@ function actualizarEstados() {
                             data-bs-title="
                                 <div style='min-width:140px'>
                                     <div><strong>IP:</strong> ${servidor.ip}</div>
+                                    ${puertoHTML}
                                 </div>
                             "
                             onclick="cargarServidor('${servidor.ip}')">
@@ -223,6 +228,7 @@ function actualizarEstados() {
                             </span>
                         </div>
                     `;
+
 
 
 

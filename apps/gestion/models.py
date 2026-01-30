@@ -9,7 +9,7 @@ class Servidor(models.Model):
     icono = models.ForeignKey('Iconos', on_delete=models.CASCADE, null=True) 
     categoria = models.ForeignKey('Categoria', on_delete=models.CASCADE) 
     proveedor = models.CharField(max_length=100, null=True, blank=True) 
-    
+    puerto = models.IntegerField(null=True, blank=True)
     def __str__(self): return f"{self.nombre} ({self.ip})"
 
 class Iconos(models.Model):

@@ -16,7 +16,7 @@ class IconoForm(forms.ModelForm):
 class ServidorForm(forms.ModelForm):
     class Meta:
         model = Servidor
-        fields = ['nombre', 'ip', 'categoria', 'servicio', 'referencia', 'referencia2', 'proveedor']
+        fields = ['nombre', 'ip', 'categoria', 'servicio', 'referencia', 'referencia2', 'proveedor', 'puerto']
         widgets = {
             'nombre': forms.TextInput(attrs={'class': 'border rounded px-3 py-2 w-full'}),
             'ip': forms.TextInput(attrs={'class': 'border rounded px-3 py-2 w-full'}),
@@ -25,6 +25,7 @@ class ServidorForm(forms.ModelForm):
             'referencia2': forms.TextInput(attrs={'class': 'border rounded px-3 py-2 w-full'}),
             'categoria': forms.Select(attrs={'class': 'border rounded px-3 py-2 w-full'}),
             'proveedor': forms.TextInput(attrs={'class': 'border rounded px-3 py-2 w-full'}),
+            'puerto': forms.NumberInput(attrs={'class': 'border rounded px-3 py-2 w-full hidden'}),
             'icono': forms.Select(attrs={
                 'class': 'hidden'
             }),

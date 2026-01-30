@@ -1,5 +1,6 @@
 import platform
 import subprocess
+import socket
 
 PING_BIN = "/usr/bin/ping"
 
@@ -19,4 +20,13 @@ def ping_host(ip: str, timeout=1000) -> bool:
             stderr=subprocess.DEVNULL
         ).returncode == 0
     except Exception:
+        return False
+
+def telnet_host(ip: str, port: int, timeout=1000) -> bool:
+    timeout_sec = timeout / 1000
+
+    try:
+        with socket.create_connection((ip, port), timeout=timeout_sec):
+            return True
+    except (socket.timeout, ConnectionRefusedError, OSError):
         return False
